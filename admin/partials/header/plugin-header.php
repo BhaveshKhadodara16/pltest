@@ -97,3 +97,11 @@ if ( wcpffc_fs()->is__premium_only() ) {
 			$wcpfc_admin_object->wcpfc_pro_menus( $current_page );
 			?>
 		</header>
+        <?php if( 'wcpfc-pro-dashboard' !== $current_page ){ ?>  
+        <div class="dots-settings-inner-main">
+            <div class="dots-settings-left-side">
+            <?php $message = filter_input( INPUT_GET, 'message', FILTER_SANITIZE_STRING );
+            if ( isset( $message ) && ! empty( $message ) ) {
+                $wcpfc_admin_object->wcpfc_updated_message( $message, "" );
+            } ?>
+        <?php } ?>

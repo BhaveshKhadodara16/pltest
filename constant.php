@@ -16,7 +16,7 @@ if( ! defined( 'CONDITIOANAL_FEE_PRO_PLUGIN_NAME' ) ){
 	define( 'CONDITIOANAL_FEE_PRO_PLUGIN_NAME', 'WooCommerce Extra Fees Plugin Premium' );
 }
 if ( ! defined( 'WCPFC_PRO_PLUGIN_VERSION' ) ) {
-	define( 'WCPFC_PRO_PLUGIN_VERSION', '3.8.4' );
+	define( 'WCPFC_PRO_PLUGIN_VERSION', '3.9.0' );
 }
 if ( ! defined( 'WCPFC_PRO_PLUGIN_URL' ) ) {
 	define( 'WCPFC_PRO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

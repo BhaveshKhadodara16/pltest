@@ -176,7 +176,7 @@
 
 			// generate td of condition
 			var td = document.createElement( 'td' );
-			td = setAllAttributes( td, {} );
+			td = setAllAttributes( td, { 'class': 'titledesc th_product_fees_conditions_condition' } );
 			tr.appendChild( td );
 			var conditions = document.createElement( 'select' );
 			conditions = setAllAttributes( conditions, {
@@ -191,7 +191,7 @@
 
 			// generate td for equal or no equal to
 			td = document.createElement( 'td' );
-			td = setAllAttributes( td, {} );
+			td = setAllAttributes( td, { 'class': 'select_condition_for_in_notin' } );
 			tr.appendChild( td );
 			var conditions_is = document.createElement( 'select' );
 			conditions_is = setAllAttributes( conditions_is, {
@@ -204,7 +204,7 @@
 
 			// td for condition values
 			td = document.createElement( 'td' );
-			td = setAllAttributes( td, { 'id': 'column_' + count } );
+			td = setAllAttributes( td, { 'id': 'column_' + count, 'class': 'condition-value' } );
 			tr.appendChild( td );
 			condition_values( jQuery( '#product_fees_conditions_condition_' + count ) );
 
@@ -297,6 +297,13 @@
 						{ 'name': coditional_vars.cart_contains_product_qty, 'attributes': { 'value': 'product_qty' } },
 					]
 				},
+                /* <fs_premium_only> */
+				{
+					'type': 'optgroup',
+					'attributes': { 'label': coditional_vars.attribute_specific },
+					'options': JSON.parse(coditional_vars.attribute_list)
+				},
+				/* </fs_premium_only> */
 				{
 					'type': 'optgroup',
 					'attributes': { 'label': coditional_vars.user_specific },
@@ -377,7 +384,7 @@
 			var loader = document.createElement( 'img' );
 			loader = setAllAttributes( loader, { 'src': coditional_vars.plugin_url + 'images/ajax-loader.gif' } );
 			column.appendChild( loader );
-
+            
 			$.ajax( {
 				type: 'GET',
 				url: coditional_vars.ajaxurl,
@@ -646,55 +653,57 @@
 			$( this ).next( 'p.description' ).toggle();
 		} );
 
-		if ( $( '.tablesorter' ).length ) {
-			$( '.tablesorter' ).tablesorter( {
-				headers: {
-					0: {
-						sorter: false
-					},
-					3: {
-						sorter: false
-					},
-					4: {
-						sorter: false
-					}
-				}
-			} );
-			var fixHelperModified = function( e, tr ) {
-				var $originals = tr.children();
-				var $helper = tr.clone();
-				$helper.children().each( function( index ) {
-					$( this ).width( $originals.eq( index ).width() );
-				} );
-				return $helper;
-			};
-			//Make diagnosis table sortable
-			$( 'table#conditional-fee-listing tbody' ).sortable( {
-				helper: fixHelperModified,
-				stop: function() {
-					var i = 0;
-					var listing = {};
-					jQuery( '.ui-sortable-handle' ).each( function() {
-						listing[ i ] = jQuery( this ).find( 'input' ).val();
-						i ++;
-					} );
-					$.ajax( {
-						type: 'GET',
-						url: coditional_vars.ajaxurl,
-						contentType: 'application/json',
-						data: {
-							'action': 'wcpfc_pro_product_fees_conditions_sorting',
-							'sorting_conditional_fee': jQuery( '#sorting_conditional_fee' ).val(),
-							'listing': listing,
-						},
-						success: function() {
-						}
-					} );
+        var fixHelperModified = function( e, tr ) {
+            var $originals = tr.children();
+            var $helper = tr.clone();
+            $helper.children().each( function( index ) {
+                $( this ).width( $originals.eq( index ).width() );
+            } );
+            return $helper;
+        };
+        //Make diagnosis table sortable
+        $( '.wcpfc-main-table table.wp-list-table tbody' ).sortable( {
+            helper: fixHelperModified,
+            stop: function() {
+                $('.wcpfc-main-table').block({
+                    message: null,
+                    overlayCSS: {
+                        background: 'rgb(255, 255, 255)',
+                        opacity: 0.6,
+                    },
+                });
+                var listing = [];
+                var paged = $('.current_paged').val();
+                jQuery( '.ui-sortable-handle' ).each(function() {
+                    listing.push(jQuery( this ).find( 'input' ).val());
+                });
+                $.ajax( {
+                    type: 'POST',
+                    url: coditional_vars.ajaxurl,
+                    // contentType: 'application/json',
+                    data: {
+                        'action': 'wcpfc_pro_product_fees_conditions_sorting',
+                        'sorting_conditional_fee': jQuery( '#sorting_conditional_fee' ).val(),
+                        'listing': listing,
+                        'paged': paged
+                    },
+                    success: function( response ) {
+                        jQuery('.wcpfc-main-table').unblock();
+                        var div_wrap = $('<div></div>').addClass('notice notice-success');
+                        var p_text = $('<p></p>').text(response.data.message);
+                        div_wrap.append(p_text);
+                        // $(div_wrap).insertAfter($('.search-box'));
+                        $('.wcpfc-main-table').prepend(div_wrap);
+                        setTimeout( function(){
+                            div_wrap.remove();
+                        }, 2000 );
+                    }
+                } );
 
-				}
-			} );
-			$( 'table#conditional-fee-listing tbody' ).disableSelection();
-		}
+            }
+        } );
+        $( '.wcpfc-main-table table tbody' ).disableSelection();
+		
 		if( $( '#ds_time_from' ).length || $( '#ds_time_to' ).length ){
 			var ds_time_from = $( '#ds_time_from' ).val();
 			var ds_time_to = $( '#ds_time_to' ).val();
@@ -2423,47 +2432,18 @@
 		}
 		numberValidateForAdvanceRules();
 
-		$( document ).on( 'click', '#clone_fees', function() {
-			if( confirm('Are you sure you would like to clone this fee?') ){
-				var current_fees_id = $( this ).attr( 'data-attr' );
-				$.ajax( {
-					type: 'GET',
-					url: coditional_vars.ajaxurl,
-					data: {
-						'action': 'wcpfc_pro_clone_fees',
-						'current_fees_id': current_fees_id
-					}, beforeSend: function() {
-						var div = document.createElement( 'div' );
-						div = setAllAttributes( div, {
-							'class': 'loader-overlay',
-						} );
-
-						var img = document.createElement( 'img' );
-						img = setAllAttributes( img, {
-							'id': 'before_ajax_id',
-							'src': coditional_vars.ajax_icon
-						} );
-
-						div.appendChild( img );
-
-						jQuery( '#conditional-fee-listing' ).after( div );
-					}, complete: function() {
-						jQuery( '.wcpfc-main-table .loader-overlay' ).remove();
-					}, success: function( response ) {
-						console.log( response );
-						var response_data = JSON.parse( response );
-						if ( 'true' === jQuery.trim( response_data[ '0' ] ) ) {
-							location.href = response_data[ '1' ];
-						}
-					}
-				} );
-			}
-		} );
 
 		/*Start: Change shipping status form list section*/
 		$( document ).on( 'click', '#fees_status_id', function() {
 			var current_fees_id = $( this ).attr( 'data-smid' );
 			var current_value = $( this ).prop( 'checked' );
+            $('.wcpfc-main-table').block({
+                message: null,
+                overlayCSS: {
+                    background: 'rgb(255, 255, 255)',
+                    opacity: 0.6,
+                },
+            });
 			$.ajax( {
 				type: 'GET',
 				url: coditional_vars.ajaxurl,
@@ -2487,8 +2467,17 @@
 					jQuery( '#conditional-fee-listing' ).after( div );
 				}, complete: function() {
 					jQuery( '.wcpfc-main-table .loader-overlay' ).remove();
+                    jQuery('.wcpfc-main-table').unblock();
 				}, success: function( response ) {
-					alert( jQuery.trim( response ) );
+                    var div_wrap = $('<div></div>').addClass('notice notice-success');
+                    var p_text = $('<p></p>').text(jQuery.trim( response ));
+                    div_wrap.append(p_text);
+                    // $(div_wrap).insertAfter($('.search-box'));
+                    $('.wcpfc-main-table').prepend(div_wrap);
+                    setTimeout( function(){
+                        div_wrap.remove();
+                    }, 2000 );
+                    jQuery('.wcpfc-main-table').unblock();
 				}
 			} );
 		} );
@@ -2497,7 +2486,8 @@
 		/*Start: Get last url parameters*/
 		function getUrlVars() {
 			var vars = [], hash;
-			var get_current_url = coditional_vars.current_url;
+			// var get_current_url = coditional_vars.current_url;
+			var get_current_url = location.href;
 			var hashes = get_current_url.slice( get_current_url.indexOf( '?' ) + 1 ).split( '&' );
 			for ( var i = 0; i < hashes.length; i ++ ) {
 				hash = hashes[ i ].split( '=' );
@@ -2576,47 +2566,54 @@
 					'chk_fees_per_page': chk_fees_per_page,
 				},
 				success: function() {
-					var div = document.createElement( 'div' );
-					div = setAllAttributes( div, {
-						'class': 'ms-msg'
-					} );
-					div.textContent = coditional_vars.success_msg2;
-					$( div ).insertBefore( '.wcpfc-section-left .wcpfc-main-table' );
-					$( 'html, body' ).animate( { scrollTop: 0 }, 'slow' );
+					// var div = document.createElement( 'div' );
+					// div = setAllAttributes( div, {
+					// 	'class': 'ms-msg'
+					// } );
+					// div.textContent = coditional_vars.success_msg2;
+					// $( div ).insertBefore( '.wcpfc-section-left .wcpfc-main-table' );
+
+                    var div_wrap = $('<div></div>').addClass('notice notice-success');
+                    var p_text = $('<p></p>').text(coditional_vars.success_msg2);
+                    div_wrap.append(p_text);
+                    $('.wcpfc-main-table').prepend(div_wrap);
+                    $( 'html, body' ).animate( { scrollTop: 0 }, 'slow' );
+
 					setTimeout( function() {
-						$( '.ms-msg' ).remove();
-					}, 2000 );
+						div_wrap.remove();
+                        window.location.replace(coditional_vars.ajax_redirect_after);
+					}, 3000 );
 				}
 			} );
 		} );
 
-		$( document ).on( 'click', '.conditional-fee-order', function() {
-			saveAllIdOrderWise( 'on_click' );
-		} );
+		// $( document ).on( 'click', '.conditional-fee-order', function() {
+		// 	saveAllIdOrderWise( 'on_click' );
+		// } );
 
-		saveAllIdOrderWise( 'on_load' );
+		// saveAllIdOrderWise( 'on_load' );
 
-		/*Start code for save all method as per sequence in list*/
-		function saveAllIdOrderWise( position ) {
-			var smOrderArray = [];
+		// /*Start code for save all method as per sequence in list*/
+		// function saveAllIdOrderWise( position ) {
+		// 	var smOrderArray = [];
 
-			$( 'table#conditional-fee-listing tbody tr' ).each( function() {
-				smOrderArray.push( this.id );
-			} );
-			$.ajax( {
-				type: 'GET',
-				url: coditional_vars.ajaxurl,
-				data: {
-					'action': 'wcpfc_pro_sm_sort_order',
-					'smOrderArray': smOrderArray
-				},
-				success: function() {
-					if ( 'on_click' === jQuery.trim( position ) ) {
-						alert( coditional_vars.success_msg1 );
-					}
-				}
-			} );
-		}
+		// 	$( 'table#conditional-fee-listing tbody tr' ).each( function() {
+		// 		smOrderArray.push( this.id );
+		// 	} );
+		// 	$.ajax( {
+		// 		type: 'GET',
+		// 		url: coditional_vars.ajaxurl,
+		// 		data: {
+		// 			'action': 'wcpfc_pro_sm_sort_order',
+		// 			'smOrderArray': smOrderArray
+		// 		},
+		// 		success: function() {
+		// 			if ( 'on_click' === jQuery.trim( position ) ) {
+		// 				alert( coditional_vars.success_msg1 );
+		// 			}
+		// 		}
+		// 	} );
+		// }
 
 		/*Start: Change shipping status form list section*/
 		$( document ).on( 'click', '#shipping_status_id', function() {
@@ -2770,6 +2767,27 @@ jQuery( document ).ready( function() {
 		} );
 	// }
 	
+    //move notices to top
+    if( jQuery('.notice').length > 0 ) {
+        setTimeout(function(){
+            jQuery('.notice').each(function(){
+                var clone = jQuery('.notice').clone();
+                jQuery('.notice').remove();
+                jQuery('.all-pad').prepend(clone);
+            });
+        }, 100);
+    }
+    if( jQuery('#message').length > 0 ){
+        setTimeout(function(){
+            jQuery('#message').each(function(){
+                var clone = jQuery('#message').clone();
+                jQuery('#message').remove();
+                jQuery('.all-pad').prepend(clone);
+            });
+        }, 100);
+    }
+    
+
 	/* <fs_premium_only> */
 	// Optional fee hide show rules
 	function optional_fee_div() {     
@@ -2778,12 +2796,12 @@ jQuery( document ).ready( function() {
 			jQuery('.enable_optional_checked').show();
 			// jQuery('.wcpfc-main-table #fee-add-field, .wcpfc-main-table #general_rule_match, .wcpfc-main-table ul').addClass('disable_me');
 			// jQuery('.wcpfc-main-table #tbl-product-fee :input, .wcpfc-main-table #tbl-product-fee a, .wcpfc-main-table #tbl-product-fee  select, .wcpfc-main-table #tbl-product-fee ul, .wcpfc-main-table #tbl-product-fee span').addClass('disable_me');
-			jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').addClass('disable_me');
+			// jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').addClass('disable_me');
 		} else {
 			jQuery('.enable_optional_checked').hide();
 			// jQuery('.wcpfc-main-table #fee-add-field, .wcpfc-main-table #general_rule_match, .wcpfc-main-table ul').removeClass('disable_me');
 			// jQuery('.wcpfc-main-table #tbl-product-fee :input, .wcpfc-main-table #tbl-product-fee a, .wcpfc-main-table #tbl-product-fee  select, .wcpfc-main-table #tbl-product-fee ul, .wcpfc-main-table #tbl-product-fee span').removeClass('disable_me');
-			jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').removeClass('disable_me');
+			// jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').removeClass('disable_me');
 		}
 	}
 	
@@ -2796,12 +2814,12 @@ jQuery( document ).ready( function() {
 			jQuery('.enable_optional_checked').show();
 			// jQuery('.wcpfc-main-table #fee-add-field, .wcpfc-main-table #general_rule_match, .wcpfc-main-table ul').addClass('disable_me');
 			// jQuery('.wcpfc-main-table #tbl-product-fee :input, .wcpfc-main-table #tbl-product-fee a, .wcpfc-main-table #tbl-product-fee  select, .wcpfc-main-table #tbl-product-fee ul, .wcpfc-main-table #tbl-product-fee span').addClass('disable_me');
-			jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').addClass('disable_me');
+			// jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').addClass('disable_me');
 		} else {
 			jQuery('.enable_optional_checked').hide();
 			// jQuery('.wcpfc-main-table #fee-add-field, .wcpfc-main-table #general_rule_match, .wcpfc-main-table ul').removeClass('disable_me');
 			// jQuery('.wcpfc-main-table #tbl-product-fee :input, .wcpfc-main-table #tbl-product-fee a, .wcpfc-main-table #tbl-product-fee  select, .wcpfc-main-table #tbl-product-fee ul, .wcpfc-main-table #tbl-product-fee span').removeClass('disable_me');
-			jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').removeClass('disable_me');
+			// jQuery('.wcpfc-main-table #apm_wrap :input, .wcpfc-main-table #apm_wrap label, .wcpfc-main-table #apm_wrap ul, .wcpfc-main-table #apm_wrap a, .wcpfc-main-table #apm_wrap .slider.round, .wcpfc-main-table #apm_wrap select, .wcpfc-main-table #apm_wrap checkbox').removeClass('disable_me');
 		}
 	});
 	var wcpfcDateFormat = 'mm/dd/yy';
@@ -3164,6 +3182,48 @@ jQuery( document ).ready( function() {
 		var rurl = jQuery('#et-review-url').val();
 		window.open( rurl, '_blank' );
 	});
+
+    /** tiptip js implementation */
+    jQuery( '.woocommerce-help-tip' ).tipTip( {
+        'attribute': 'data-tip',
+        'fadeIn': 50,
+        'fadeOut': 50,
+        'delay': 200,
+        'keepAlive': true
+    } );
+
+    //Toggle sidebar start
+    var span_full = jQuery('.toggleSidebar .dashicons');
+    var show_sidebar = localStorage.getItem('wcpfc-sidebar-display');
+    if( ( null !== show_sidebar || undefined !== show_sidebar ) && ( 'hide' === show_sidebar ) ) {
+        jQuery('.all-pad').addClass('hide-sidebar');
+        span_full.removeClass('dashicons-arrow-right-alt2').addClass('dashicons-arrow-left-alt2');
+    } else {
+        jQuery('.all-pad').removeClass('hide-sidebar');
+        span_full.removeClass('dashicons-arrow-left-alt2').addClass('dashicons-arrow-right-alt2');
+    }
+
+    jQuery(document).on( 'click', '.toggleSidebar', function(){
+        jQuery('.all-pad').toggleClass('hide-sidebar');
+        if( jQuery('.all-pad').hasClass('hide-sidebar') ){
+            localStorage.setItem('wcpfc-sidebar-display', 'hide');
+            span_full.removeClass('dashicons-arrow-right-alt2').addClass('dashicons-arrow-left-alt2');
+            jQuery('.all-pad .dots-settings-right-side').css({'-webkit-transition': '.3s ease-in width', '-o-transition': '.3s ease-in width',  'transition': '.3s ease-in width'});
+            jQuery('.all-pad .dots-settings-left-side').css({'-webkit-transition': '.3s ease-in width', '-o-transition': '.3s ease-in width',  'transition': '.3s ease-in width'});
+            setTimeout(function() {
+                jQuery('#dotsstoremain .dotstore_plugin_sidebar').css('display', 'none');
+            }, 300);
+        } else {
+            localStorage.setItem('wcpfc-sidebar-display', 'show');
+            span_full.removeClass('dashicons-arrow-left-alt2').addClass('dashicons-arrow-right-alt2');
+            jQuery('.all-pad .dots-settings-right-side').css({'-webkit-transition': '.3s ease-out width', '-o-transition': '.3s ease-out width',  'transition': '.3s ease-out width'});
+            jQuery('.all-pad .dots-settings-left-side').css({'-webkit-transition': '.3s ease-out width', '-o-transition': '.3s ease-out width',  'transition': '.3s ease-out width'});
+            // setTimeout(function() {
+                jQuery('#dotsstoremain .dotstore_plugin_sidebar').css('display', 'block');
+            // }, 300);
+        }
+    });
+    //Toggle sidebar end
 } );
 
 /* <fs_premium_only> */

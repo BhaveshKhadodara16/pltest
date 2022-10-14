@@ -82,9 +82,11 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 				'jquery-ui-sortable',
 				'select2',
 			), $this->version, false );
+            wp_enqueue_script( 'jquery-tiptip' );
+            wp_enqueue_script( 'jquery-blockui' );
 			wp_enqueue_script( $this->plugin_name . '-tablesorter-js', plugin_dir_url( __FILE__ ) . 'js/jquery.tablesorter.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( $this->plugin_name . '-timepicker-js', plugin_dir_url( __FILE__ ) . 'js/jquery.timepicker.js', array( 'jquery' ), $this->version, false );
-			$current_url = home_url( add_query_arg( $wp->query_vars, $wp->request ) );
+			// $current_url = home_url( add_query_arg( $wp->query_vars, $wp->request ) );
 			if ( wcpffc_fs()->is__premium_only() ) {
 				if ( wcpffc_fs()->can_use_premium_code() ) {
 					$weight_unit = get_option( 'woocommerce_weight_unit' );
@@ -142,15 +144,18 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 							'validation_length3'               		=> esc_html__( 'or more characters', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'location_specific'                		=> esc_html__( 'Location Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'product_specific'                 		=> esc_html__( 'Product Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
+                            'attribute_specific'                    => esc_html__( 'Attribute Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'shipping_specific'                		=> esc_html__( 'Shipping Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'user_specific'                    		=> esc_html__( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'cart_specific'                    		=> esc_html__( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'payment_specific'                 		=> esc_html__( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
+                            'attribute_list'                        => wp_json_encode( $this->wcpfc_pro_attribute_list__premium_only() ),
 							'min_max_qty_error'                		=> esc_html__( 'Max qty should greater then min qty', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'min_max_weight_error'             		=> esc_html__( 'Max weight should greater then min weight', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'min_max_subtotal_error'           		=> esc_html__( 'Max subtotal should greater then min subtotal', 'woocommerce-conditional-product-fees-for-checkout' ),
-							'success_msg1'                     		=> esc_html__( 'Fees order saved successfully', 'woocommerce-conditional-product-fees-for-checkout' ),
-							'success_msg2'                     		=> esc_html__( 'Your settings successfully saved.', 'woocommerce-conditional-product-fees-for-checkout' ),
+                            'ajax_redirect_after'                   => esc_url( admin_url( 'admin.php?page=wcpfc-pro-list') ),
+							'success_msg1'                     		=> esc_html__( 'Fees order has been saved successfully', 'woocommerce-conditional-product-fees-for-checkout' ),
+							'success_msg2'                     		=> esc_html__( 'Your settings has been saved successfully. Reload in moment.', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'warning_msg1'                     		=> sprintf( __( '<p><b style="color: red;">Note: </b>If entered price is more than total shipping price than Message looks like: <b>Shipping Method Name: Curreny Symbole like($) -60.00 Price </b> and if shipping minus price is more than total price than it will set Total Price to Zero(0).</p>', 'woocommerce-conditional-product-fees-for-checkout' ) ),
 							'warning_msg2'                     		=> esc_html__( 'Please disable Advance Pricing Rule if you dont need because you have not created rule there.', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'warning_msg3'                     		=> esc_html__( 'You need to select product specific option in Shipping Method Rules for product based option', 'woocommerce-conditional-product-fees-for-checkout' ),
@@ -176,7 +181,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 							'cart_subtotal_after_discount_msg' 		=> esc_html__( 'This rule will apply when you would apply coupon in front side. ', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'cart_subtotal_specific_products_msg'	=> esc_html__( 'This rule will apply when you would add cart contain product. ', 'woocommerce-conditional-product-fees-for-checkout' ),
 							'city_msg' 						   		=> esc_html__( 'Make sure enter each city name in one line.', 'woocommerce-conditional-product-fees-for-checkout' ),
-							'current_url'                      		=> $current_url,
+							// 'current_url'                      		=> $current_url,
 							'doc_url'                          		=> "https://docs.thedotstore.com/category/191-premium-plugin-settings",
 							'list_page_url'                    		=> add_query_arg( array( 'page' => 'wcpfc-pro-list' ), admin_url( 'admin.php' ) ),
 							'total_old_revenue_flag'		   		=> get_option('total_old_revenue_flag') ? get_option('total_old_revenue_flag') : false,
@@ -220,8 +225,9 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 						'user_specific'                 => esc_html__( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'cart_specific'                 => esc_html__( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'payment_specific'              => esc_html__( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ),
-						'success_msg1'                  => esc_html__( 'Fees order saved successfully', 'woocommerce-conditional-product-fees-for-checkout' ),
-						'success_msg2'                  => esc_html__( 'Your settings successfully saved.', 'woocommerce-conditional-product-fees-for-checkout' ),
+                        'ajax_redirect_after'           => esc_url( admin_url( 'admin.php?page=wcpfc-pro-list') ),
+						'success_msg1'                  => esc_html__( 'Fees order has been saved successfully', 'woocommerce-conditional-product-fees-for-checkout' ),
+						'success_msg2'                  => esc_html__( 'Your settings has been saved successfully. Reload in moment.', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'warning_msg1'                  => sprintf( __( '<p><b style="color: red;">Note: </b>If entered price is more than total shipping price than Message looks like: <b>Shipping Method Name: Curreny Symbole like($) -60.00 Price </b> and if shipping minus price is more than total price than it will set Total Price to Zero(0).</p>', 'woocommerce-conditional-product-fees-for-checkout' ) ),
 						'select_chk'                    => esc_html__( 'Please select at least one checkbox', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'change_status'                 => esc_html__( 'Are You Sure You Want To Change The Status?', 'woocommerce-conditional-product-fees-for-checkout' ),
@@ -229,7 +235,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 						'delete_confirmation_msg'       => esc_html__( 'Are You Sure You Want to Delete?', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'note'                          => esc_html__( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'click_here'                    => esc_html__( 'Click Here', 'woocommerce-conditional-product-fees-for-checkout' ),
-						'current_url'                   => $current_url,
+						// 'current_url'                   => $current_url,
 						'doc_url'                       => "https://docs.thedotstore.com/category/191-premium-plugin-settings",
 						'list_page_url'                 => add_query_arg( array( 'page' => 'wcpfc-pro-list' ), admin_url( 'admin.php' ) ),
 						'currency_symbol'				=> esc_attr( get_woocommerce_currency_symbol() ),
@@ -324,6 +330,8 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 	 */
 	public function wcpfc_pro_fee_list_page() {
 		require_once( plugin_dir_path( __FILE__ ) . '/partials/wcpfc_pro_list-page.php' );
+        $wcpfc_rule_lising_obj = new WCPFC_Rule_Listing_Page();
+		$wcpfc_rule_lising_obj->wcpfc_sj_output();
 	}
 	/**
 	 * Register Admin add new fee condition page output.
@@ -387,6 +395,28 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			return false;
 		}
 	}
+    /**
+	 * Convert array to json
+	 *
+	 * @return array $filter_data
+	 * @since 3.9.0
+	 *
+	 */
+	public function wcpfc_pro_attribute_list__premium_only() {
+		$filter_attr_data     = [];
+		$filter_attr_json     = array();
+		$attribute_taxonomies = wc_get_attribute_taxonomies();
+		if ( $attribute_taxonomies ) {
+			foreach ( $attribute_taxonomies as $attribute ) {
+				$att_label                               = $attribute->attribute_label;
+				$att_name                                = wc_attribute_taxonomy_name( $attribute->attribute_name );
+				$filter_attr_json['name']                = $att_label;
+				$filter_attr_json['attributes']['value'] = esc_html__( $att_name, 'woocommerce-conditional-product-fees-for-checkout' );
+				$filter_attr_data[]                      = $filter_attr_json;
+			}
+		}
+		return $filter_attr_data;
+	}
 	/**
 	 * Save fees data
 	 *
@@ -401,6 +431,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 		if ( empty( $post ) ) {
 			return false;
 		}
+        
 		$post_type                 = filter_input( INPUT_POST, 'post_type', FILTER_SANITIZE_STRING );
 		$wcpfc_pro_conditions_save = filter_input( INPUT_POST, 'wcpfc_pro_fees_conditions_save', FILTER_SANITIZE_STRING );
 		if ( isset( $wcpfc_pro_conditions_save, $post_type ) && wp_verify_nonce( sanitize_text_field( $wcpfc_pro_conditions_save ), 'wcpfc_pro_fees_conditions_save_action' ) && self::wcpfc_post_type === $post_type ) {
@@ -924,13 +955,13 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 		if ( isset( $page, $success ) && $page === ' wcpfc-pro-list' && $success === 'true' ) {
 			?>
 			<div class="updated notice">
-				<p><?php esc_html_e( 'Successfully Saved', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+				<p><?php esc_html_e( 'Fee rule has been successfully saved', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 			</div>
 			<?php
 		} else if ( isset( $page, $delete ) && $page === 'wcpfc-pro-list' && $delete === 'true' ) {
 			?>
 			<div class="updated notice">
-				<p><?php esc_html_e( 'Successfully Deleted', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+				<p><?php esc_html_e( 'Fee rule has been successfully deleted', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 			</div>
 			<?php
 		}
@@ -972,6 +1003,8 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			$html           = '';
 			if ( wcpffc_fs()->is__premium_only() ) {
 				if ( wcpffc_fs()->can_use_premium_code() ) {
+                    $att_taxonomy = wc_get_attribute_taxonomy_names();
+
 					if ( 'country' === $condition ) {
 						$html .= wp_json_encode( $this->wcpfc_pro_get_country_list( $count, [], true ) );
 					} elseif ( 'state' === $condition ) {
@@ -990,7 +1023,9 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 						$html .= wp_json_encode( $this->wcpfc_pro_get_category_list( $count, [], true ) );
 					} elseif ( 'tag' === $condition ) {
 						$html .= wp_json_encode( $this->wcpfc_pro_get_tag_list( $count, [], true ) );
-					} elseif ( 'product_qty' === $condition ) {
+					} elseif ( in_array( $condition, $att_taxonomy, true ) ) {
+                        $html .= wp_json_encode( $this->wcpfc_pro_get_att_term_list__premium_only( $count, $condition, [], true ) );
+                    } elseif ( 'product_qty' === $condition ) {
 						$html .= 'input';
 					} elseif ( 'user' === $condition ) {
 						$html .= wp_json_encode( $this->wcpfc_pro_get_user_list( $count, [], true ) );
@@ -1218,7 +1253,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 		if ( isset( $get_all_products->posts ) && ! empty( $get_all_products->posts ) ) {
 			foreach ( $get_all_products->posts as $get_all_product ) {
 				$_product = wc_get_product( $get_all_product->ID );
-				//if ( ! ( $_product->is_virtual( 'yes' ) ) ) {
+				// if ( ! ( $_product->is_virtual( 'yes' ) ) ) {
                     if ( ! empty( $sitepress ) ) {
                         $new_product_id = apply_filters( 'wpml_object_id', $get_all_product->ID, 'product', true, $default_lang );
                     } else {
@@ -1229,7 +1264,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
                     if ( '' !== $selectedVal ) {
                         $html .= '<option value="' . esc_attr( $new_product_id ) . '" ' . esc_attr( $selectedVal ) . '>' . '#' . esc_html( $new_product_id ) . ' - ' . esc_html( get_the_title( $new_product_id ) ) . '</option>';
                     }
-				//}
+				// }
 			}
 		}
 		$html .= '</select>';
@@ -1331,6 +1366,40 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 		$html .= '</select>';
 		if ( $json ) {
 			return $this->wcpfc_pro_convert_array_to_json( $filter_tags );
+		}
+		return $html;
+	}
+    /**
+	 * Get attribute list in Shipping Method Rules
+	 *
+	 * @param string $count
+	 * @param string $condition
+	 * @param array  $selected
+	 *
+	 * @return string $html
+	 * @since  3.9.0
+	 *
+	 */
+	public function wcpfc_pro_get_att_term_list__premium_only( $count = '', $condition = '', $selected = array(), $json = false ) {
+		$att_terms         = get_terms( array(
+			'taxonomy'   => $condition,
+			'parent'     => 0,
+			'hide_empty' => false,
+		) );
+		$filter_attributes = [];
+		$html              = '<select rel-id="' . $count . '" name="fees[product_fees_conditions_values][value_' . esc_attr( $count ) . '][]" class="wcpfc_select product_fees_conditions_values multiselect2 product_fees_conditions_values_att_term" multiple="multiple">';
+		if ( ! empty( $att_terms ) ) {
+			foreach ( $att_terms as $term ) {
+				$term_name                       = $term->name;
+				$term_slug                       = $term->slug;
+				$selectedVal                     = is_array( $selected ) && ! empty( $selected ) && in_array( $term_slug, $selected, true ) ? 'selected=selected' : '';
+				$html                            .= '<option value="' . $term_slug . '" ' . $selectedVal . '>' . $term_name . '</option>';
+				$filter_attributes[ $term_slug ] = $term_name;
+			}
+		}
+		$html .= '</select>';
+		if ( $json ) {
+			return $this->wcpfc_pro_convert_array_to_json( $filter_attributes );
 		}
 		return $html;
 	}
@@ -1880,7 +1949,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			}
 		}
 		if ( 1 === $result ) {
-			$html = esc_html__( 'Fees deleted successfully.', 'woocommerce-conditional-product-fees-for-checkout' );
+			$html = esc_html__( 'Selected fees rule has been deleted successfully.', 'woocommerce-conditional-product-fees-for-checkout' );
 			delete_transient( 'get_top_ten_fees' );
 			delete_transient( 'get_all_fees' );
 			delete_transient( 'get_all_dashboard_fees' );
@@ -1951,7 +2020,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			}
 		}
 		if ( 1 === $result ) {
-			$html = esc_html__( "Fees status changed successfully.", 'woocommerce-conditional-product-fees-for-checkout' );
+			$html = esc_html__( "Fees status has been changed successfully.", 'woocommerce-conditional-product-fees-for-checkout' );
 		} else {
 			$html = esc_html__( "Something went wrong", 'woocommerce-conditional-product-fees-for-checkout' );
 		}
@@ -2480,12 +2549,67 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 	 * @since 1.0.0
 	 */
 	function wcpfc_pro_conditional_fee_sorting() {
-		if ( isset( $_POST['listing'], $_POST['sorting_conditional_fee'] ) && wp_verify_nonce( sanitize_text_field( $_POST['sorting_conditional_fee'] ), 'sorting_conditional_fee_action' ) ) {
-			$listing = array_map( 'sanitize_text_field', wp_unslash( $_POST['listing'] ) );
-			foreach ( $listing as $key => $value ) {
-				update_post_meta( $value, 'wcpfc-pro-condition_order', $key );
+
+        check_ajax_referer( 'sorting_conditional_fee_action', 'sorting_conditional_fee' );
+
+        global $sitepress, $wpdb;
+        
+        if ( ! empty( $sitepress ) ) {
+			$default_lang = $sitepress->get_default_language();
+		} else {
+			$get_site_language = get_bloginfo( 'language' );
+			if ( false !== strpos( $get_site_language, '-' ) ) {
+				$get_site_language_explode = explode( '-', $get_site_language );
+				$default_lang              = $get_site_language_explode[0];
+			} else {
+				$default_lang = $get_site_language;
 			}
 		}
+        $post_type 			= self::wcpfc_post_type;
+        $getPaged      		= filter_input( INPUT_POST, 'paged', FILTER_SANITIZE_NUMBER_INT);
+		$getListingArray	= filter_input( INPUT_POST, 'listing', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
+		
+        $paged     			= !empty( $getPaged ) ? $getPaged : 1;
+		$listinbgArray     	= !empty( $getListingArray ) ? array_map( 'intval', wp_unslash( $getListingArray ) ) : array();
+
+        $results        =   $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT ID 
+                FROM {$wpdb->posts} 
+                WHERE post_type = %s AND post_status IN ('publish', 'draft') 
+                ORDER BY menu_order, post_date 
+                DESC", 
+                $post_type
+            )
+        );
+
+        //Create the list of ID's
+		$objects_ids = array();            
+		foreach($results as $result) {
+			$objects_ids[] = (int)$result->ID; 
+		}
+        
+        //Here we switch order
+		$per_page = get_option( 'chk_fees_per_page' ) ? get_option( 'chk_fees_per_page' ) : 10;
+		$edit_start_at = $paged * $per_page - $per_page;
+		$index = 0;
+		for( $i = $edit_start_at; $i < ($edit_start_at + $per_page); $i++ ) {
+
+			if( !isset($objects_ids[$i]) )
+				break;
+				
+			$objects_ids[$i] = (int)$listinbgArray[$index];
+			$index++;
+		}
+
+        //Update the menu_order within database
+		foreach( $objects_ids as $menu_order => $id ) {
+			$data = array( 'menu_order' => $menu_order );
+			$wpdb->update( $wpdb->posts, $data, array('ID' => $id) );
+			clean_post_cache( $id );
+		}
+        
+        wp_send_json_success( array('message' => esc_html__( 'Fee rules has been updated.', 'woocommerce-conditional-product-fees-for-checkout' ) ) );
 	}
 	/**
 	 * Ajax response of product wc product variable
@@ -2718,73 +2842,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			return $html;
 		}
 	}
-	/**
-	 * Clone fees
-	 *
-	 * @since 1.0.0
-	 */
-	public function wcpfc_pro_clone_fees() {
-		/* Check for post request */
-		$get_current_fees_id = filter_input( INPUT_GET, 'current_fees_id', FILTER_SANITIZE_NUMBER_INT );
-		if ( ! ( isset( $get_current_fees_id ) ) ) {
-			$html = sprintf(
-				'<strong>%s</strong>', esc_html__( 'No post to duplicate has been supplied!', 'woocommerce-conditional-product-fees-for-checkout' )
-			);
-			echo wp_kses_post( $html );
-			wp_die();
-		}
-		/* End of if */
-		/* Get the original post id */
-		$post_id = isset( $get_current_fees_id ) ? absint( $get_current_fees_id ) : '';
-		if ( ! empty( $post_id ) || "" !== $post_id ) {
-			/* Get all the original post data */
-			$post = get_post( $post_id );
-			/* Get current user and make it new post user (duplicate post) */
-			$current_user    = wp_get_current_user();
-			$new_post_author = $current_user->ID;
-			/* If post data exists, duplicate the data into new duplicate post */
-			if ( isset( $post ) && null !== $post ) {
-				/* New post data array */
-				$args = array(
-					'comment_status' => $post->comment_status,
-					'ping_status'    => $post->ping_status,
-					'post_author'    => $new_post_author,
-					'post_content'   => $post->post_content,
-					'post_excerpt'   => $post->post_excerpt,
-					'post_name'      => $post->post_name,
-					'post_parent'    => $post->post_parent,
-					'post_password'  => $post->post_password,
-					'post_status'    => 'draft',
-					'post_title'     => $post->post_title . '-duplicate',
-					'post_type'      => self::wcpfc_post_type,
-					'to_ping'        => $post->to_ping,
-					'menu_order'     => $post->menu_order,
-				);
-				/* Duplicate the post by wp_insert_post() function */
-				$new_post_id = wp_insert_post( $args );
-				/* Duplicate all post meta-data */
-				$post_meta_data = get_post_meta( $post_id );
-				if ( 0 !== count( $post_meta_data ) ) {
-					foreach ( $post_meta_data as $meta_key => $meta_data ) {
-						if ( '_wp_old_slug' === $meta_key ) {
-							continue;
-						}
-						$meta_value = maybe_unserialize( $meta_data[0] );
-						update_post_meta( $new_post_id, $meta_key, $meta_value );
-					}
-				}
-			}
-			$wcpfcnonce   = wp_create_nonce( 'wcpfcnonce' );
-			$redirect_url = add_query_arg( array(
-				'page'     => 'wcpfc-pro-edit-fee',
-				'id'       => $new_post_id,
-				'action'   => 'edit',
-				'_wpnonce' => esc_attr( $wcpfcnonce ),
-			), admin_url( 'admin.php' ) );
-			echo wp_json_encode( array( true, $redirect_url ) );
-		}
-		wp_die();
-	}
+	
 	/**
 	 * Change fees status in list section
 	 *
@@ -2817,7 +2875,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			update_post_meta( $post_id, 'fee_settings_status', 'off' );
 		}
 		if ( ! empty( $post_update ) ) {
-			echo esc_html__( 'Fees status changed successfully.', 'woocommerce-conditional-product-fees-for-checkout' );
+			echo esc_html__( 'Fees status has been changed successfully.', 'woocommerce-conditional-product-fees-for-checkout' );
 			delete_transient( 'get_top_ten_fees' );
 			delete_transient( 'get_all_fees' );
 			delete_transient( 'get_all_dashboard_fees' );
@@ -3316,7 +3374,8 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 				),
 			);
 			$attached_import_files__arr = filter_var_array( $_FILES, $file_import_file_args );
-			$extension                  = end( explode( '.', $attached_import_files__arr['import_file']['name'] ) );
+            $attached_import_files__arr_explode = explode( '.', $attached_import_files__arr['import_file']['name'] );
+			$extension                          = end( $attached_import_files__arr_explode );
 			if ( $extension !== 'json' ) {
 				wp_die( esc_html__( 'Please upload a valid .json file', 'woocommerce-conditional-product-fees-for-checkout' ) );
 			}
@@ -3574,16 +3633,6 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 	public function wcpfc_pro_menus( $current = 'wcpfc-pro-list' ) {
 		$wcpfc_action  = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 		$wcpfc_wpnonce = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
-		if ( 'edit' === $wcpfc_action && $current === 'wcpfc-pro-edit-fee' ) {
-			$fee_id     = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_STRING );
-			$menu_title = __( 'Edit Product Fees', 'woocommerce-conditional-product-fees-for-checkout' );
-			$menu_url   = $this->wcpfc_pro_plugins_url( $fee_id, 'wcpfc-pro-edit-fee', '', 'edit', $wcpfc_wpnonce );
-			$menu_slug  = 'wcpfc-pro-edit-fee';
-		} else {
-			$menu_title = __( 'Add Product Fees', 'woocommerce-conditional-product-fees-for-checkout' );
-			$menu_url   = $this->wcpfc_pro_plugins_url( '', 'wcpfc-pro-add-new', '', '', '' );
-			$menu_slug  = 'wcpfc-pro-add-new';
-		}
 		$wpfp_menus = array(
 			'main_menu' => array(
 				'pro_menu'  => array(
@@ -3596,11 +3645,6 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 						'menu_title' => __( 'Manage Product Fees', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'menu_slug'  => 'wcpfc-pro-list',
 						'menu_url'   => $this->wcpfc_pro_plugins_url( '', 'wcpfc-pro-list', '', '', '' ),
-					),
-					$menu_slug                => array(
-						'menu_title' => $menu_title,
-						'menu_slug'  => $menu_slug,
-						'menu_url'   => $menu_url,
 					),
 					'wcpfc-pro-import-export' => array(
 						'menu_title' => __( 'Import / Export', 'woocommerce-conditional-product-fees-for-checkout' ),
@@ -3652,11 +3696,6 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 						'menu_title' => __( 'Manage Product Fees', 'woocommerce-conditional-product-fees-for-checkout' ),
 						'menu_slug'  => 'wcpfc-pro-list',
 						'menu_url'   => $this->wcpfc_pro_plugins_url( '', 'wcpfc-pro-list', '', '', '' ),
-					),
-					$menu_slug              => array(
-						'menu_title' => $menu_title,
-						'menu_slug'  => $menu_slug,
-						'menu_url'   => $menu_url,
 					),
 					'wcpfc-pro-get-started' => array(
 						'menu_title' => __( 'About Plugin', 'woocommerce-conditional-product-fees-for-checkout' ),
@@ -3924,5 +3963,55 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin {
 			wp_send_json( array( 'recusrsive' => false, 'total_revenue' => $total_revenue, 'fee_array' => $fee_array ) );
 		}
 		wp_send_json( array( 'recusrsive' => true, 'offset' => $offset, 'total_chunk' => $total_chunk, 'fee_array' => $fee_array, 'total_revenue' => $total_revenue ) );
+	}
+    /**
+	 * Display message in admin side
+	 *
+	 * @param string $message
+	 * @param string $tab
+	 *
+	 * @return bool
+	 * @since 1.0.0
+	 *
+	 */
+	public function wcpfc_updated_message( $message, $validation_msg ) {
+		if ( empty( $message ) ) {
+			return false;
+		}
+    
+        if ( 'created' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been created.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'saved' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been updated.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'deleted' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been deleted.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'duplicated' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been duplicated.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'disabled' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been disabled.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'enabled' === $message ) {
+            $updated_message = esc_html__( "Fee rule has been enabled.", 'woocommerce-conditional-product-fees-for-checkout' );
+        }
+        if ( 'failed' === $message ) {
+            $failed_messsage = esc_html__( "There was an error with saving data.", 'woocommerce-conditional-product-fees-for-checkout' );
+        } elseif ( 'nonce_check' === $message ) {
+            $failed_messsage = esc_html__( "There was an error with security check.", 'woocommerce-conditional-product-fees-for-checkout' );
+        }
+        if ( 'validated' === $message ) {
+            $validated_messsage = esc_html( $validation_msg );
+        }
+		
+		if ( ! empty( $updated_message ) ) {
+			echo sprintf( '<div id="message" class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html( $updated_message ) );
+			return false;
+		}
+		if ( ! empty( $failed_messsage ) ) {
+			echo sprintf( '<div id="message" class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( $failed_messsage ) );
+			return false;
+		}
+		if ( ! empty( $validated_messsage ) ) {
+			echo sprintf( '<div id="message" class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( $validated_messsage ) );
+			return false;
+		}
 	}
 }

@@ -9,7 +9,7 @@ $msg        = '';
 $style      = "display:none;";
 if ( 'success' === $get_status ) {
 	$style = "display:block;";
-	$msg   = esc_html__( 'Import successfully', 'woocommerce-conditional-product-fees-for-checkout' );
+	$msg   = esc_html__( 'Data has been imported successfully', 'woocommerce-conditional-product-fees-for-checkout' );
 }
 ?>
 <div class="imp_exp_msg" style="<?php echo esc_attr( $style ); ?>">
@@ -18,7 +18,7 @@ if ( 'success' === $get_status ) {
 <div class="wcpfc-section-left">
 	<div class="wcpfc-main-table res-cl">
 		<h2><?php echo esc_html__( 'Import &amp; Export Settings', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
-		<table class="table-outer">
+		<table class="table-outer import-export-table">
 			<tbody>
 			<tr>
 				<th scope="row" class="titledesc"><label
@@ -27,7 +27,7 @@ if ( 'success' === $get_status ) {
 				<td>
 					<form method="post">
 						<div class="wcpfc_main_container">
-							<p class="wcpfc_button_container"><?php submit_button( __( 'Export', 'woocommerce-conditional-product-fees-for-checkout' ), 'secondary', 'submit', false ); ?></p>
+							<p class="wcpfc_button_container"><?php submit_button( __( 'Export', 'woocommerce-conditional-product-fees-for-checkout' ), 'primary', 'submit', false ); ?></p>
 							<p class="wcpfc_content_container">
 								<?php wp_nonce_field( 'wcpfc_export_save_action_nonce', 'wcpfc_export_action_nonce' ); ?>
 								<input type="hidden" name="wcpfc_export_action" value="export_settings"/>
@@ -54,7 +54,7 @@ if ( 'success' === $get_status ) {
 								<?php
 								$other_attributes = array( 'id' => 'wcpfc_import_setting' );
 								?>
-								<?php submit_button( __( 'Import', 'woocommerce-conditional-product-fees-for-checkout' ), 'secondary', 'submit', false, $other_attributes ); ?>
+								<?php submit_button( __( 'Import', 'woocommerce-conditional-product-fees-for-checkout' ), 'primary', 'submit', false, $other_attributes ); ?>
 								<strong><?php esc_html_e( 'Import the plugin settings from a .json file. This file can be obtained by exporting the settings on another site using the form above.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></strong>
 							</p>
 						</div>

@@ -62,14 +62,17 @@ defined( 'ABSPATH' ) || exit;
 		$fees      = $wcpfc_obj->wcpfc_pro_get_applied_fees();
 		foreach ( $fees as $fee ) :
 			?>
-			<tr class="fee">
+			<tr class="fee test">
 				<th><?php echo esc_html( $fee->name ); ?></th>
 				<td data-title="<?php echo esc_attr( $fee->name ); ?>">
 					<?php
-					if( 'total_fee' === $fee->id ) {
+                    //We have put ignore here as grunt want to use VIP function but customers' site are non-VIP platform which generate ERROR/Confliction
+                    $fee_post = get_page_by_title($fee->name, OBJECT, 'wc_conditional_fee'); //phpcs:ignore
+                    $fees_id = !empty($fee_post->ID) ? $fee_post->ID : 0;
+					if( 0 === $fees_id && 'fees' === $fee->id ) {
 						$final_fees_label = get_option( 'chk_enable_all_fee_tooltip_text' );
 					} else {
-						$final_fees_label = get_post_meta( $fee->id, 'fee_settings_tooltip_desc', true );
+						$final_fees_label = get_post_meta( $fees_id, 'fee_settings_tooltip_desc', true );
 					}
 					if ( ! empty( $final_fees_label ) ) {
 						echo '<div class="extra-flate-tool-tip"><a data-tooltip="' . esc_attr( $final_fees_label ) . '"><i class="fa fa-question-circle fa-lg"></i></a></div>';

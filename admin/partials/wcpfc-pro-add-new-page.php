@@ -5,17 +5,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once( plugin_dir_path( __FILE__ ) . 'header/plugin-header.php' );
 $wcpfc_admin_object = new Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Admin( '', '' );
 $wcpfc_object       = new Woocommerce_Conditional_Product_Fees_For_Checkout_Pro( '', '' );
+$allowed_tooltip_html = wp_kses_allowed_html( 'post' )['span'];
 if ( isset( $_POST['submitFee'], $_POST['wcpfc_pro_fees_conditions_save'] ) && wp_verify_nonce( sanitize_text_field( $_POST['wcpfc_pro_fees_conditions_save'] ), 'wcpfc_pro_fees_conditions_save_action' ) && ! empty( $_POST['submitFee'] ) ) {
 	$post_data = $_POST;
-	$wcpfc_admin_object->wcpfc_pro_fees_conditions_save( $post_data );
+	// $wcpfc_admin_object->wcpfc_pro_fees_conditions_save( $post_data );
 }
 if ( isset( $_REQUEST['action'], $_REQUEST['id'] ) && 'edit' === $_REQUEST['action'] ) {
 	$get_wpnonce         = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
 	$get_retrieved_nonce = isset( $get_wpnonce ) ? sanitize_text_field( wp_unslash( $get_wpnonce ) ) : '';
-	if ( ! wp_verify_nonce( $get_retrieved_nonce, 'wcpfcnonce' ) ) {
-		die( 'Failed security check' );
-	}
 	$request_post_id    		= sanitize_text_field( $_REQUEST['id'] );
+	// if ( ! wp_verify_nonce( $get_retrieved_nonce, 'edit_' . $request_post_id ) ) {
+	// 	die( 'Failed security check' );
+	// }
 	$btnValue           		= __( 'Update', 'woocommerce-conditional-product-fees-for-checkout' );
 	$fee_title          		= __( get_the_title( $request_post_id ), 'woocommerce-conditional-product-fees-for-checkout' );
 	$getFeesCost        		= __( get_post_meta( $request_post_id, 'fee_settings_product_cost', true ), 'woocommerce-conditional-product-fees-for-checkout' );
@@ -319,8 +320,9 @@ if ( wcpffc_fs()->is__premium_only() ) {
 			<table class="form-table table-outer product-fee-table">
 				<tbody>
 				<tr valign="top">
-					<th class="titledesc" scope="row"><label
-							for="onoffswitch"><?php esc_html_e( 'Status', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+					<th class="titledesc" scope="row">
+                        <label for="onoffswitch"><?php esc_html_e( 'Status', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'Enable or Disable', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 					</th>
 					<td class="forminp">
 						<label class="switch">
@@ -328,52 +330,47 @@ if ( wcpffc_fs()->is__premium_only() ) {
 							       value="on" <?php echo esc_attr( $sm_status ); ?>>
 							<div class="slider round"></div>
 						</label>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><?php esc_html_e( 'Enable or Disable', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 					</td>
 				</tr>
 
 				<tr valign="top">
-					<th class="titledesc" scope="row"><label
-							for="fee_settings_product_fee_title"><?php esc_html_e( 'Product Fee Title', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-							<span class="required-star">*</span></label></th>
+					<th class="titledesc" scope="row">
+                        <label for="fee_settings_product_fee_title">
+                            <?php esc_html_e( 'Product Fee Title', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+							<span class="required-star">*</span>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'This product fees title is visible to the customer at the time of checkout.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                    </th>
 					<td class="forminp">
-						<input type="text" name="fee_settings_product_fee_title" class="text-class"
-						       id="fee_settings_product_fee_title"
-						       value="<?php echo isset( $fee_title ) ? esc_attr( $fee_title ) : ''; ?>" required="1"
-						       placeholder="<?php esc_attr_e( 'Enter product fees title', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><?php esc_html_e( 'This product fees title is visible to the customer at the time of checkout.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+						<input type="text" name="fee_settings_product_fee_title" class="text-class" id="fee_settings_product_fee_title" value="<?php echo isset( $fee_title ) ? esc_attr( $fee_title ) : ''; ?>" required="1" placeholder="<?php esc_attr_e( 'Enter product fees title', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
 					</td>
-
 				</tr>
 				<tr valign="top">
 					<th class="titledesc" scope="row">
-						<label
-							for="fee_settings_select_fee_type"><?php esc_html_e( 'Select Fee Type', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+						<label for="fee_settings_select_fee_type">
+                            <?php esc_html_e( 'Select Fee Type', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'You can charges extra fees on fixed price or percentage.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 					</th>
 					<td class="forminp">
 						<select name="fee_settings_select_fee_type" id="fee_settings_select_fee_type" class="">
-							<option
-								value="fixed" <?php echo isset( $getFeesType ) && 'fixed' === $getFeesType ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Fixed', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-							<option
-								value="percentage" <?php echo isset( $getFeesType ) && 'percentage' === $getFeesType ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Percentage', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+							<option value="fixed" <?php echo isset( $getFeesType ) && 'fixed' === $getFeesType ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Fixed', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+							<option value="percentage" <?php echo isset( $getFeesType ) && 'percentage' === $getFeesType ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Percentage', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
 						</select>
 						<span class="fees_on_cart_total_wrap">
 							<input type="checkbox" name="fees_on_cart_total" id="fees_on_cart_total" value="on" <?php checked( $fees_on_cart_total, 'on' ); ?>/>
 							<label for="fees_on_cart_total"><strong><?php esc_html_e( 'Apply fee on cart total', 'woocommerce-conditional-product-fees-for-checkout' ); ?></strong></label>
 						</span>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><?php esc_html_e( 'you can charges extra fees on fixed price or percentage.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 					</td>
 				</tr>
 				<tr valign="top">
-					<th class="titledesc" scope="row"><label
-							for="fee_settings_product_cost"><?php esc_html_e( 'Fees', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-							<span class="required-star">*</span></label></th>
+					<th class="titledesc" scope="row">
+                        <label for="fee_settings_product_cost">
+                            <?php esc_html_e( 'Fees', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+							<span class="required-star">*</span>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'You can add fixed/percentage fee based on selection above.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                    </th>
 					<td class="forminp">
 						<div class="product_cost_left_div">
 							<?php if( isset( $getFeesType ) && 'percentage' === $getFeesType ){ ?>
@@ -381,13 +378,6 @@ if ( wcpffc_fs()->is__premium_only() ) {
 							<?php } else { ?>
 								<input type="text" name="fee_settings_product_cost" required="1" class="text-class" id="fee_settings_product_cost" value="<?php echo isset( $getFeesCost ) ? esc_attr( $getFeesCost ) : ''; ?>" placeholder="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>" autocomplete="off" />
 							<?php } ?>
-							<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-							<p class="description" style="display:none;">
-								<?php
-								esc_html_e( 'If you select fixed fees type then : you have to add fixed cost/fees (Eg. 10, 20) ).', 'woocommerce-conditional-product-fees-for-checkout' );
-								echo "<br/>";
-								esc_html_e( 'If you select percentage wise fees type then : you have to add percentage (Eg. 10, 15.20)', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-							</p>
 						</div>
 						<?php
 						if ( wcpffc_fs()->is__premium_only() ) {
@@ -396,51 +386,25 @@ if ( wcpffc_fs()->is__premium_only() ) {
 								<div class="product_cost_right_div">
 
 									<div class="applyperqty-boxone">
-										<label
-											for="fee_chk_qty_price"><?php esc_html_e( 'Apply Per Additional Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-										<input type="checkbox" name="fee_chk_qty_price" id="fee_chk_qty_price"
-										       class="chk_qty_price_class"
-										       value="on" <?php checked( $getFeesPerQtyFlag, 'on' ); ?>>
-										<span
-											class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-										<p class="description"
-										   style="display:none;"><?php esc_html_e( 'This will apply fees as per quantity of products.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+										<label for="fee_chk_qty_price"><?php esc_html_e( 'Apply Per Additional Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+										<input type="checkbox" name="fee_chk_qty_price" id="fee_chk_qty_price" class="chk_qty_price_class" value="on" <?php checked( $getFeesPerQtyFlag, 'on' ); ?>>
+                                        <?php echo wp_kses( wc_help_tip( esc_html__( 'This will apply fees as per quantity of products.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 									</div>
 
 									<div class="applyperqty-boxtwo">
-										<label
-											for="apply_per_qty_type"><?php esc_html_e( 'Calculate Quantity Based On', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-										<select name="fee_per_qty" id="price_cartqty_based" class="chk_qty_price_class"
-										        id="apply_per_qty_type">
-											<option
-												value="qty_cart_based" <?php selected( $getFeesPerQty, 'qty_cart_based' ); ?>><?php esc_html_e( 'Cart Based', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="qty_product_based" <?php selected( $getFeesPerQty, 'qty_product_based' ); ?>><?php esc_html_e( 'Product Based', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+										<label for="apply_per_qty_type"><?php esc_html_e( 'Calculate Quantity Based On', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+										<select name="fee_per_qty" id="price_cartqty_based" class="chk_qty_price_class" id="apply_per_qty_type">
+											<option value="qty_cart_based" <?php selected( $getFeesPerQty, 'qty_cart_based' ); ?>><?php esc_html_e( 'Cart Based', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+											<option value="qty_product_based" <?php selected( $getFeesPerQty, 'qty_product_based' ); ?>><?php esc_html_e( 'Product Based', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
 										</select>
-										<span
-											class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-										<p class="description"
-										   style="display:none;"><?php esc_html_e( 'If you want to apply the fee for each quantity - where quantity should calculated based on product/category/tag conditions, then select the "Product Based" option.', 'woocommerce-conditional-product-fees-for-checkout' ) ?>
-											<br><?php esc_html_e( 'If you want to apply the fee for each quantity in the customer\'s cart, then select the "Cart Based" option.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-										</p>
+                                        <?php echo wp_kses( wc_help_tip( esc_html__( 'Cart based will apply on product\'s count in cart and Product based will apply on product\'s quantity.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 									</div>
 
 									<div class="applyperqty-boxthree">
-										<label
-											for="extra_product_cost"><?php esc_html_e( 'Fee per Additional Quantity&nbsp;(' . esc_html( get_woocommerce_currency_symbol() ) . ') ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-											<span class="required-star">*</span></label>
-										<input type="text" name="extra_product_cost" class="text-class"
-										       id="extra_product_cost" required
-										       value="<?php echo isset( $extraProductCost ) ? esc_attr( $extraProductCost ) : ''; ?>"
-										       placeholder="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>">
-										<span
-											class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-										<p class="description" style="display:none;">
-											<?php
-											echo esc_html( 'You can add fee here to be charged for each additional quantity. E.g. if user has added 3 quantities and you have set fee=$10 and fee per additional quantity=$5, then total extra fee=$10+$5+$5=$20.' ) . '<br>'
-											     . esc_html( 'The quantity will be calculated based on the option chosen in the "Calculate Quantity Based On" above dropdown. That means, if you have chosen "Product Based" option - quantities will be calculated based on the products which are meeting the conditions set for this fee, and if they are more than 1, fee will be calculated considering only its additional quantities. e.g. 5 items in cart, and 3 are meeting the condition set, then additional fee of $5 will be charged on 2 quantities only, and not on 4 quantities.', 'woocommerce-conditional-product-fees-for-checkout' );
-											?>
-										</p>
+										<label for="extra_product_cost"><?php esc_html_e( 'Fee per Additional Quantity&nbsp;(' . esc_html( get_woocommerce_currency_symbol() ) . ') ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                                        <span class="required-star">*</span></label>
+										<input type="text" name="extra_product_cost" class="text-class" id="extra_product_cost" required value="<?php echo isset( $extraProductCost ) ? esc_attr( $extraProductCost ) : ''; ?>" placeholder="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>">
+                                        <?php echo wp_kses( wc_help_tip( esc_html__( 'You can add fee here to be charged for each additional quantity.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 									</div>
 
 								</div>
@@ -460,7 +424,6 @@ if ( wcpffc_fs()->is__premium_only() ) {
 										&nbsp;&nbsp;&nbsp;<strong>iv.</strong> <span>[fee max_fee=20]</span> - This means cart subtotal charge greater than max_fee then maximum 20 charge will be applicable.<br><br>'
 										, 'woocommerce-conditional-product-fees-for-checkout' )
 									, array( 'br' => array(),'a' => array('href' => array(),'title' => array(),'target' => array(),'class' => array()), 'span' => array( 'class' => array() ), 'strong'   => array() ) ) );
-
 									?>
 								</p>
 								<?php
@@ -476,28 +439,17 @@ if ( wcpffc_fs()->is__premium_only() ) {
 							?>
 							<tr valign="top">
 								<th class="titledesc" scope="row">
-									<label for="sm_custom_weight_base"><?php esc_html_e( 'Each Weight Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-									<span class="wcpfc-new-feture"><?php esc_html_e( '[New]', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span>
+									<label for="sm_custom_weight_base">
+                                        <?php esc_html_e( 'Each Weight Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                                    </label>
+                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Enable/disable additional rule per weight in cart page.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+									<!-- <span class="wcpfc-new-feture"><?php //esc_html_e( '[New]', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span> -->
 								</th>
 								<td class="forminp">
 									<input type="checkbox" name="is_allow_custom_weight_base"
 								       id="is_allow_custom_weight_base"
 								       class="is_allow_custom_weight_base"
 								       value="on" <?php checked( $is_allow_custom_weight_base, 'on' ); ?>>
-									<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-									<p class="description" style="display:none;">
-										<?php
-										echo sprintf( wp_kses( __( 
-											'Enable or disable weight base Fees. <strong>Default: False</strong><br>
-											Apply additional rule per weight in cart page.<br>
-											<strong>Ex:</strong> 10 amount charges per 2 KG over 10KG<br>
-											In this rule Per each 2KG add charges of the amount of 10. But it will be apply over the 10KG in cart.
-											<br>'
-											, 'woocommerce-conditional-product-fees-for-checkout' )
-										, array( 'br' => array(),'a' => array('href' => array(),'title' => array(),'target' => array(),'class' => array()), 'span' => array( 'class' => array() ), 'strong'   => array() ) ) );
-
-										?>
-									</p>
 								</td>
 							</tr>
 							<tr valign="top" class="depend_of_custom_weight_base">
@@ -510,14 +462,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<label for="sm_custom_weight_base_cost"><?php esc_html_e( 'Weight - Rate', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 										</div>
 										<div class="value">
-											<input type="text" name="sm_custom_weight_base_cost" class="text-class"
-												       id="sm_custom_weight_base_cost" value="<?php echo esc_attr( $sm_custom_weight_base_cost ); ?>"
-												       placeholder="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>">
-
-											<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-											<p class="description" style="display:none;">
-												<?php esc_html_e( 'Weight amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-											</p>
+											<input type="text" name="sm_custom_weight_base_cost" class="text-class" id="sm_custom_weight_base_cost" value="<?php echo esc_attr( $sm_custom_weight_base_cost ); ?>" placeholder="<?php echo esc_attr( get_woocommerce_currency_symbol() ); ?>">
 										</div>
 									</div>
 									<div class="wcpfc_custom_weight_base">
@@ -525,14 +470,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<label for="sm_custom_weight_base_per_each"><?php esc_html_e( 'Weight - Per each', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 										</div>
 										<div class="value">
-											<input type="text" name="sm_custom_weight_base_per_each" class="text-class"
-											       id="sm_custom_weight_base_per_each" value="<?php echo esc_attr( $sm_custom_weight_base_per_each ); ?>"
-											       placeholder="<?php esc_attr_e( 'kg', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-
-											<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-											<p class="description" style="display:none;">
-												<?php esc_html_e( 'Weight per each', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-											</p>
+											<input type="text" name="sm_custom_weight_base_per_each" class="text-class" id="sm_custom_weight_base_per_each" value="<?php echo esc_attr( $sm_custom_weight_base_per_each ); ?>" placeholder="<?php esc_attr_e( 'kg', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
 										</div>
 									</div>
 									<div class="wcpfc_custom_weight_base">
@@ -540,14 +478,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<label for="sm_custom_weight_base_over"><?php esc_html_e( 'Weight - Over', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 										</div>
 										<div class="value">
-											<input type="text" name="sm_custom_weight_base_over" class="text-class"
-											       id="sm_custom_weight_base_over" value="<?php echo esc_attr( $sm_custom_weight_base_over ); ?>"
-											       placeholder="<?php esc_attr_e( 'kg', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-
-											<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-											<p class="description" style="display:none;">
-												<?php esc_html_e( 'Weight over', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-											</p>
+											<input type="text" name="sm_custom_weight_base_over" class="text-class" id="sm_custom_weight_base_over" value="<?php echo esc_attr( $sm_custom_weight_base_over ); ?>" placeholder="<?php esc_attr_e( 'kg', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
 										</div>
 									</div>
 								</td>
@@ -567,18 +498,18 @@ if ( wcpffc_fs()->is__premium_only() ) {
 									for="wcpfc_tooltip_desc"><?php esc_html_e( 'Tooltip Description', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 							</th>
 							<td class="forminp">
-                            <textarea name="wcpfc_tooltip_desc" rows="3" cols="70" id="wcpfc_tooltip_desc"
-                                      placeholder="<?php esc_attr_e( 'Enter tooltip short description', 'woocommerce-conditional-product-fees-for-checkout' ); ?>" maxlength="25"><?php echo esc_textarea( $wcpfc_tooltip_desc ); ?></textarea>
+                            <textarea name="wcpfc_tooltip_desc" rows="3" cols="70" id="wcpfc_tooltip_desc" placeholder="<?php esc_attr_e( 'Enter tooltip short description', 'woocommerce-conditional-product-fees-for-checkout' ); ?>" maxlength="25"><?php echo esc_textarea( $wcpfc_tooltip_desc ); ?></textarea>
 							</td>
 						</tr>
 						<tr valign="top">
-							<th class="titledesc" scope="row"><label
-									for="first_order_for_user"><?php esc_html_e( 'User\'s first order', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+							<th class="titledesc" scope="row">
+                                <label for="first_order_for_user">
+                                    <?php esc_html_e( 'User\'s first order', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                                </label>
+                                <?php echo wp_kses( wc_help_tip( esc_html__( 'Apply the fee for the user\'s first order only', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 							</th>
 							<td class="forminp">
 								<input type="checkbox" name="first_order_for_user" id="first_order_for_user" class="chk_qty_price_class" value="on" <?php checked( $first_order_for_user, 'on' ); ?>>
-								<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-								<p class="description" style="display:none;"><?php esc_html_e( 'Apply the fee for the user\'s first order only', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 							</td>
 						</tr>
 						<?php
@@ -586,120 +517,115 @@ if ( wcpffc_fs()->is__premium_only() ) {
 				}
 				?>
 				<tr valign="top">
-					<th class="titledesc" scope="row"><label
-							for="fee_settings_start_date"><?php esc_html_e( 'Start Date', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+					<th class="titledesc" scope="row">
+                        <label for="fee_settings_start_date">
+                            <?php esc_html_e( 'Start Date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'Select Start date on which you want to enable the method', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 					</th>
 					<td class="forminp">
-						<input type="text" name="fee_settings_start_date" class="text-class"
-						       id="fee_settings_start_date"
-						       value="<?php echo isset( $getFeesStartDate ) ? esc_attr( $getFeesStartDate ) : ''; ?>"
-						       placeholder="<?php esc_attr_e( 'Select start date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><?php esc_html_e( 'Select Start date on which you want to enable the method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
-					</td>
-				</tr>
-				<tr valign="top">
-					<th class="titledesc" scope="row"><label
-							for="fee_settings_end_date"><?php esc_html_e( 'End Date', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-					</th>
-					<td class="forminp">
-						<input type="text" name="fee_settings_end_date" class="text-class" id="fee_settings_end_date"
-						       value="<?php echo isset( $getFeesEndDate ) ? esc_attr( $getFeesEndDate ) : ''; ?>"
-						       placeholder="<?php esc_attr_e( 'Select end date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><?php esc_html_e( 'Select End date on which you want to disable the method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+						<input type="text" name="fee_settings_start_date" class="text-class" id="fee_settings_start_date" value="<?php echo isset( $getFeesStartDate ) ? esc_attr( $getFeesStartDate ) : ''; ?>" placeholder="<?php esc_attr_e( 'Select start date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
 					</td>
 				</tr>
 				<tr valign="top">
 					<th class="titledesc" scope="row">
-						<label
-							for="fee_settings_select_taxable"><?php esc_html_e( 'Is Amount Taxable ?', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                        <label for="fee_settings_end_date">
+                            <?php esc_html_e( 'End Date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'Select End date on which you want to disable the method', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+					</th>
+					<td class="forminp">
+						<input type="text" name="fee_settings_end_date" class="text-class" id="fee_settings_end_date" value="<?php echo isset( $getFeesEndDate ) ? esc_attr( $getFeesEndDate ) : ''; ?>" placeholder="<?php esc_attr_e( 'Select end date', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+					</td>
+				</tr>
+				<tr valign="top">
+					<th class="titledesc" scope="row">
+						<label for="fee_settings_select_taxable"><?php esc_html_e( 'Is Amount Taxable ?', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 					</th>
 					<td class="forminp">
 						<select name="fee_settings_select_taxable" id="fee_settings_select_taxable" class="">
-							<option
-								value="no" <?php echo isset( $getFeesTaxable ) && 'no' === $getFeesTaxable ? 'selected="selected"' : '' ?>><?php esc_html_e( 'No', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-							<option
-								value="yes" <?php echo isset( $getFeesTaxable ) && 'yes' === $getFeesTaxable ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Yes', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+							<option value="no" <?php echo isset( $getFeesTaxable ) && 'no' === $getFeesTaxable ? 'selected="selected"' : '' ?>><?php esc_html_e( 'No', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+							<option value="yes" <?php echo isset( $getFeesTaxable ) && 'yes' === $getFeesTaxable ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Yes', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				<?php
 				if ( wcpffc_fs()->is__premium_only() ) {
 					if ( wcpffc_fs()->can_use_premium_code() ) {
-						?>
-				<tr valign="top">
-					<th class="titledesc" scope="row">
-						<label
-							for="fee_settings_select_optional"><?php esc_html_e( 'Is Fee Optional ?', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-					</th>
-					<td class="forminp">
-						<select name="fee_settings_select_optional" id="fee_settings_select_optional" class="">
-							<option
-								value="no" <?php echo isset( $getFeesOptional ) && 'no' === $getFeesOptional ? 'selected="selected"' : '' ?>><?php esc_html_e( 'No', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-							<option
-								value="yes" <?php echo isset( $getFeesOptional ) && 'yes' === $getFeesOptional ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Yes', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-						</select>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description"
-						   style="display:none;"><span><strong><?php esc_html_e( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></strong></span><?php esc_html_e( 'Once you select this optional fee to Yes, it will always show the fee on checkout and below all the rules are disabled.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
-					</td>
-				</tr>
-				<tr valign="top" class="enable_optional_checked">
-					<th class="titledesc" scope="row"><label
-							for="default_optional_checked"><?php esc_html_e( 'Default optional fee checked', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-					</th>
-					<td class="forminp">
-						<input type="checkbox" name="default_optional_checked" id="default_optional_checked" class="chk_qty_price_class" value="on" <?php checked( $default_optional_checked, 'on' ); ?>>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;"><?php esc_html_e( 'Checked this optional fee by default on checkout page', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
-					</td>
-				</tr>
-				<tr valign="top" class="enable_optional_checked">
-					<th class="titledesc" scope="row"><label
-							for="optional_fee_title"><?php esc_html_e( 'Optional fee section title', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-					</th>
-					<td class="forminp">
-						<input type="text" name="optional_fee_title" id="optional_fee_title" class="text-class" value="<?php echo esc_attr($optional_fee_title); ?>" />
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;"><?php esc_html_e( 'Optional fee section title before payment section on checkout page', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
-					</td>
-				</tr>
-				<tr valign="top">
-					<th class="titledesc" scope="row">
-						<label
-							for="fee_settings_recurring"><?php esc_html_e( 'Set fee as recurring payment', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
-					</th>
-					<td class="forminp">
-						<input type="checkbox" name="fee_settings_recurring" id="fee_settings_recurring" class="fee_settings_recurring" value="on" <?php checked( $fee_settings_recurring, 'on' ); ?>>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;">
-							<?php echo sprintf( wp_kses_post( '%1$sNote: %2$sThis option only work with subscription products. Once selected it will allow fee on recurring payment as well.', 'woocommerce-conditional-product-fees-for-checkout' ), '<strong>', '</strong>' ); ?>
-						</p>
-					</td>
-				</tr>
-				<?php 
+                    ?>
+                    <tr valign="top">
+                        <th class="titledesc" scope="row">
+                            <label for="fee_settings_select_optional"><?php esc_html_e( 'Is Fee Optional ?', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                            <?php echo wp_kses( wc_help_tip( esc_html__( 'This will not apply fee be default', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                        </th>
+                        <td class="forminp">
+                            <select name="fee_settings_select_optional" id="fee_settings_select_optional" class="">
+                                <option value="no" <?php echo isset( $getFeesOptional ) && 'no' === $getFeesOptional ? 'selected="selected"' : '' ?>><?php esc_html_e( 'No', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                <option value="yes" <?php echo isset( $getFeesOptional ) && 'yes' === $getFeesOptional ? 'selected="selected"' : '' ?>><?php esc_html_e( 'Yes', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                            </select>
+                            <p><strong><?php esc_html_e( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></strong></span><?php esc_html_e( 'Once you select this optional fee to Yes, it will always show the fee on checkout and below all the rules are disabled.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+                        </td>
+                    </tr>
+                    <tr valign="top" class="enable_optional_checked">
+                        <th class="titledesc" scope="row">
+                            <label for="default_optional_checked">
+                                <?php esc_html_e( 'Default optional fee checked', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                            </label>
+                            <?php echo wp_kses( wc_help_tip( esc_html__( 'Checked this optional fee by default on checkout page', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                        </th>
+                        <td class="forminp">
+                            <input type="checkbox" name="default_optional_checked" id="default_optional_checked" class="chk_qty_price_class" value="on" <?php checked( $default_optional_checked, 'on' ); ?>>
+                        </td>
+                    </tr>
+                    <tr valign="top" class="enable_optional_checked">
+                        <th class="titledesc" scope="row">
+                            <label for="optional_fee_title">
+                                <?php esc_html_e( 'Optional fee section title', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                            </label>
+                            <?php echo wp_kses( wc_help_tip( esc_html__( 'Optional fee section title before payment section on checkout page', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                        </th>
+                        <td class="forminp">
+                            <input type="text" name="optional_fee_title" id="optional_fee_title" class="text-class" value="<?php echo esc_attr($optional_fee_title); ?>" />
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th class="titledesc" scope="row">
+                            <label for="fee_settings_recurring">
+                                <?php esc_html_e( 'Set fee as recurring payment', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                            </label>
+                            <?php echo wp_kses( wc_help_tip( esc_html__( 'Once selected it will allow fee on recurring payment as well.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                        </th>
+                        <td class="forminp">
+                            <input type="checkbox" name="fee_settings_recurring" id="fee_settings_recurring" class="fee_settings_recurring" value="on" <?php checked( $fee_settings_recurring, 'on' ); ?>>
+                            <p><?php echo sprintf( wp_kses_post( '%1$sNote: %2$sThis option only work with subscription products. ', 'woocommerce-conditional-product-fees-for-checkout' ), '<strong>', '</strong>' ); ?></p>
+                        </td>
+                    </tr>
+                    <?php 
 					}
 				}
 				?>
 				<tr valign="top">
 					<th class="titledesc" scope="row">
-						<label
-							for="fee_show_on_checkout_only"><?php esc_html_e( 'Showcase fee on checkout only', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+						<label for="fee_show_on_checkout_only">
+                            <?php esc_html_e( 'Showcase fee on checkout only', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php echo wp_kses( wc_help_tip( esc_html__( 'This option will show added fees on checkout page only.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 					</th>
 					<td class="forminp">
 						<input type="checkbox" name="fee_show_on_checkout_only" id="fee_show_on_checkout_only" class="fee_show_on_checkout_only" value="on" <?php checked( $fee_show_on_checkout_only, 'on' ); ?>>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;">
-							<?php echo sprintf( wp_kses_post( '%1$sNote: %2$sThis option will show and add fees on checkout page only.', 'woocommerce-conditional-product-fees-for-checkout' ), '<strong>', '</strong>' ); ?>
-						</p>
 					</td>
 				</tr>
 				<tr valign="top">
 					<th class="titledesc" scope="row">
-						<label for="ds_select_day_of_week"><?php esc_html_e( 'Days of the Week', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+						<label for="ds_select_day_of_week">
+                            <?php esc_html_e( 'Days of the Week', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php $html = sprintf( '%s<a href=%s target="_blank">%s</a>',
+								esc_html__( 'Select days on which day fee will enable on the website. This rule match with current day which is set by wordpress ', 'woocommerce-conditional-product-fees-for-checkout' ),
+								esc_url( admin_url( 'options-general.php' ) ),
+								esc_html__( 'Timezone', 'woocommerce-conditional-product-fees-for-checkout' )
+							);
+                        echo wp_kses( wc_help_tip( wp_kses_post( $html ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 					</th>
 					<td class="forminp">
 						<?php
@@ -713,539 +639,554 @@ if ( wcpffc_fs()->is__premium_only() ) {
 							'sat' => esc_html__( 'Saturday', 'woocommerce-conditional-product-fees-for-checkout' ),
 						);
 						?>
-						<select name="ds_select_day_of_week[]" id="ds_select_day_of_week"
-								class="ds_select_day_of_week multiselect2 wcpfc_select"
-								multiple="multiple"
-								placeholder='<?php echo esc_attr( 'Select days of the Week', 'woocommerce-conditional-product-fees-for-checkout' ); ?>'>
-							<?php
-							foreach ( $select_day_week_array as $value => $name ) {
-								?>
+						<select name="ds_select_day_of_week[]" id="ds_select_day_of_week" class="ds_select_day_of_week multiselect2 wcpfc_select" multiple="multiple" placeholder='<?php echo esc_attr( 'Select days of the Week', 'woocommerce-conditional-product-fees-for-checkout' ); ?>'>
+							<?php foreach ( $select_day_week_array as $value => $name ) { ?>
 								<option value="<?php echo esc_attr( $value ); ?>" <?php echo ! empty( $ds_select_day_of_week ) && in_array( $value, $ds_select_day_of_week, true ) ? 'selected="selected"' : '' ?>><?php echo esc_html( $name ); ?></option>
-								<?php
-							}
-							?>
+                            <?php } ?>
 						</select>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;">
-							<?php
-							$html = sprintf( '%s<a href=%s target="_blank">%s</a>',
-								esc_html__( 'Select days on which day fee will enable on the website. This rule match with current day which is set by wordpress ', 'woocommerce-conditional-product-fees-for-checkout' ),
-								esc_url( admin_url( 'options-general.php' ) ),
-								esc_html__( 'Timezone', 'woocommerce-conditional-product-fees-for-checkout' )
-							);
-							echo wp_kses_post( $html );
-							?>
-						</p>
 					</td>
 				</tr>
 				<tr valign="top">
 					<th class="titledesc" scope="row">
-						<label
-							for="fee_show_on_checkout_only"><?php esc_html_e( 'Time', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+						<label for="fee_show_on_checkout_only">
+                            <?php esc_html_e( 'Time', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </label>
+                        <?php
+                        $html = sprintf( '%s<a href=%s target="_blank">%s</a>',
+                            esc_html__( 'Select time on which time product fee will enable on the website. This rule match with current time which is set by wordpress ', 'woocommerce-conditional-product-fees-for-checkout' ),
+                            esc_url( admin_url( 'options-general.php' ) ),
+                            esc_html__( 'Timezone', 'woocommerce-conditional-product-fees-for-checkout' )
+                        );
+                        echo wp_kses( wc_help_tip( wp_kses_post( $html ) ), array( 'span' => $allowed_tooltip_html ) );
+                        ?>
 					</th>
 					<td class="forminp">
-						<span class="ds_time_from"><?php esc_html_e( 'From:', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span>
-						<input type="text" name="ds_time_from" class="text-class" id="ds_time_from"
-								value="<?php echo esc_attr( $ds_time_from ); ?>"
-								placeholder='<?php echo esc_attr( 'Select start time', 'woocommerce-conditional-product-fees-for-checkout' ); ?>'
-								autocomplete="off">
-						<span class="ds_time_to"><?php esc_html_e( 'To:', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span>
-						<input type="text" name="ds_time_to" class="text-class" id="ds_time_to"
-								value="<?php echo esc_attr( $ds_time_to ); ?>"
-								placeholder='<?php echo esc_attr( 'Select end time', 'woocommerce-conditional-product-fees-for-checkout' ); ?>'
-								autocomplete="off">
+                        <div class="ds_time_wrap">
+                            <span class="ds_time_from"><?php esc_html_e( 'From:', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span>
+                            <input type="text" name="ds_time_from" class="text-class" id="ds_time_from" value="<?php echo esc_attr( $ds_time_from ); ?>" placeholder='<?php echo esc_attr( 'Select start time', 'woocommerce-conditional-product-fees-for-checkout' ); ?>' autocomplete="off">
+                        </div>
+                        <div class="ds_time_wrap">
+                            <span class="ds_time_to"><?php esc_html_e( 'To:', 'woocommerce-conditional-product-fees-for-checkout' ); ?></span>
+                            <input type="text" name="ds_time_to" class="text-class" id="ds_time_to" value="<?php echo esc_attr( $ds_time_to ); ?>" placeholder='<?php echo esc_attr( 'Select end time', 'woocommerce-conditional-product-fees-for-checkout' ); ?>' autocomplete="off">
+                        </div>
 						<a href="javascript:void(0)" class="ds_reset_time"><?php esc_html_e( 'Reset time', 'woocommerce-conditional-product-fees-for-checkout' ); ?></a>
-						<span class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-						<p class="description" style="display:none;">
-							<?php
-							$html = sprintf( '%s<a href=%s target="_blank">%s</a>',
-								esc_html__( 'Select time on which time product fee will enable on the website. This rule match with current time which is set by wordpress ', 'woocommerce-conditional-product-fees-for-checkout' ),
-								esc_url( admin_url( 'options-general.php' ) ),
-								esc_html__( 'Timezone', 'woocommerce-conditional-product-fees-for-checkout' )
-							);
-							echo wp_kses_post( $html );
-							?>
-						</p>
 					</td>
 				</tr>
 				</tbody>
 			</table>
-			<div class="sub-title">
-				<h2><?php esc_html_e( 'Conditional Fee Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
-				<div class="tap">
-					<a id="fee-add-field" class="button button-primary button-large" href="javascript:;">
-						<?php esc_html_e( '+ Add Row', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-					</a>
-					<?php
-					if ( wcpffc_fs()->is__premium_only() ) {
-						if ( wcpffc_fs()->can_use_premium_code() ) {
-							?>
-							<div class="wocfc_match_type">
-								<p class="switch_in_pricing_rules_description_left">
-									<?php esc_html_e( 'below', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-								</p>
-								<select name="cost_rule_match[general_rule_match]" id="general_rule_match"
-								        class="arcmt_select">
-									<option
-										value="any" <?php selected( $general_rule_match, 'any' ) ?>><?php esc_html_e( 'Any One', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-									<option
-										value="all" <?php selected( $general_rule_match, 'all' ) ?>><?php esc_html_e( 'All', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-								</select>
-								<p class="switch_in_pricing_rules_description">
-									<?php esc_html_e( 'rule match', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-								</p>
-							</div>
-							<?php
-						}
-					}
-					?>
-				</div>
-			</div>
-			<div class="tap">
-				<table id="tbl-product-fee" class="tbl_product_fee table-outer tap-cas form-table product-fee-table">
-					<tbody>
-					<?php
-					if ( isset( $productFeesArray ) && ! empty( $productFeesArray ) ) {
-						$i = 2;
-						foreach ( $productFeesArray as $key => $productfees ) {
-							$fees_conditions = isset( $productfees['product_fees_conditions_condition'] ) ? $productfees['product_fees_conditions_condition'] : '';
-							$condition_is    = isset( $productfees['product_fees_conditions_is'] ) ? $productfees['product_fees_conditions_is'] : '';
-							$condtion_value  = isset( $productfees['product_fees_conditions_values'] ) ? $productfees['product_fees_conditions_values'] : array();
-							?>
-							<tr id="row_<?php echo esc_attr( $i ); ?>" valign="top">
-								<th class="titledesc th_product_fees_conditions_condition" scope="row">
-									<select rel-id="<?php echo esc_attr( $i ); ?>"
-									        id="product_fees_conditions_condition_<?php echo esc_attr( $i ); ?>"
-									        name="fees[product_fees_conditions_condition][]"
-									        id="product_fees_conditions_condition"
-									        class="product_fees_conditions_condition">
-										<optgroup
-											label="<?php esc_attr_e( 'Location Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-											<option
-												value="country" <?php echo ( 'country' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Country', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="city" <?php echo ( 'city' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'City', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<?php
-											if ( wcpffc_fs()->is__premium_only() ) {
-												if ( wcpffc_fs()->can_use_premium_code() ) {
-													?>
-													<option
-														value="state" <?php echo ( 'state' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'State', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<option
-														value="postcode" <?php echo ( 'postcode' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Postcode', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<option
-														value="zone" <?php echo ( 'zone' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Zone', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<?php
-												}
-											}
-											?>
-										</optgroup>
-										<optgroup
-											label="<?php esc_attr_e( 'Product Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-											<option
-												value="product" <?php echo ( 'product' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="variableproduct" <?php echo ( 'variableproduct' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains variable product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="category" <?php echo ( 'category' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains category\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="tag" <?php echo ( 'tag' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains tag\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="product_qty" <?php echo ( 'product_qty' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains product\'s quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										</optgroup>
-										<optgroup
-											label="<?php esc_attr_e( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-											<option
-												value="user" <?php echo ( 'user' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'User', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<?php
-											if ( wcpffc_fs()->is__premium_only() ) {
-												if ( wcpffc_fs()->can_use_premium_code() ) {
-													?>
-													<option
-														value="user_role" <?php echo ( 'user_role' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'User Role', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<?php
-												}
-											}
-											?>
-										</optgroup>
-										<optgroup
-											label="<?php esc_attr_e( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-											<?php
-											$currency_symbol = get_woocommerce_currency_symbol();
-											$currency_symbol = ! empty( $currency_symbol ) ? '(' . $currency_symbol . ')' : '';
-											if ( wcpffc_fs()->is__premium_only() ) {
-												if ( wcpffc_fs()->can_use_premium_code() ) {
-													$weight_unit = get_option( 'woocommerce_weight_unit' );
-													$weight_unit = ! empty( $weight_unit ) ? '(' . $weight_unit . ')' : '';
-												}
-											}
-											?>
-											<option
-												value="cart_total" <?php echo ( 'cart_total' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (Before Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-											<?php
-											if ( wcpffc_fs()->is__premium_only() ) {
-												if ( wcpffc_fs()->can_use_premium_code() ) {
-													?>
-													<option
-														value="cart_totalafter" <?php echo ( 'cart_totalafter' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (After Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-													<option
-														value="cart_specificproduct" <?php echo ( 'cart_specificproduct' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (Specific products) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-													<?php
-												}
-											}
-											?>
-											<option
-												value="quantity" <?php echo ( 'quantity' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<?php
-											if ( wcpffc_fs()->is__premium_only() ) {
-												if ( wcpffc_fs()->can_use_premium_code() ) {
-													?>
-													<option
-														value="weight" <?php echo ( 'weight' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $weight_unit ); ?></option>
-													<option
-														value="coupon" <?php echo ( 'coupon' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Coupon', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<option
-														value="shipping_class" <?php echo ( 'shipping_class' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-													<?php
-												}
-											}
-											?>
-										</optgroup>
-										<?php
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												?>
-												<optgroup
-													label="<?php esc_attr_e( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-													<option
-														value="payment" <?php echo ( 'payment' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Payment Gateway', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												</optgroup>
-												<optgroup
-													label="<?php esc_attr_e( 'Shipping Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-													<option
-														value="shipping_method" <?php echo ( 'shipping_method' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Shipping Method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												</optgroup>
-												<?php
-											}
-										}
-										?>
-									</select>
-								</th>
-								<td class="select_condition_for_in_notin">
-									<?php if ( 'cart_total' === $fees_conditions || 'cart_totalafter' === $fees_conditions || 'cart_specificproduct' === $fees_conditions || 'quantity' === $fees_conditions || 'weight' === $fees_conditions || 'product_qty' === $fees_conditions ) { ?>
-										<select name="fees[product_fees_conditions_is][]"
-										        class="product_fees_conditions_is_<?php echo esc_attr( $i ); ?>">
-											<option
-												value="is_equal_to" <?php echo ( 'is_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="less_equal_to" <?php echo ( 'less_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Less or Equal to ( <= )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="less_then" <?php echo ( 'less_then' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Less than ( < )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="greater_equal_to" <?php echo ( 'greater_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Greater or Equal to ( >= )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="greater_then" <?php echo ( 'greater_then' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Greater than ( > )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="not_in" <?php echo ( 'not_in' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										</select>
-									<?php } else { ?>
-										<select name="fees[product_fees_conditions_is][]"
-										        class="product_fees_conditions_is_<?php echo esc_attr( $i ); ?>">
-											<option
-												value="is_equal_to" <?php echo ( 'is_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											<option
-												value="not_in" <?php echo ( 'not_in' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?> </option>
-										</select>
-									<?php } ?>
-								</td>
-								<td class="condition-value" id="column_<?php echo esc_attr( $i ); ?>">
-									<?php
-									$html = '';
-									if ( wcpffc_fs()->is__premium_only() ) {
-										if ( wcpffc_fs()->can_use_premium_code() ) {
-											if ( 'country' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_country_list( $i, $condtion_value );
-											} elseif ( 'state' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_states_list__premium_only( $i, $condtion_value );
-											} elseif ( 'city' === $fees_conditions ) {
-												$html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
-												$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b> Make sure enter each city name in one line.', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-														) ) );
-											} elseif ( 'postcode' === $fees_conditions ) {
-												$html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
-											} elseif ( 'zone' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_zones_list__premium_only( $i, $condtion_value );
-											} elseif ( 'product' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_product_list( $i, $condtion_value, 'edit' );
-												$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
-                                                                    Advanced Pricing > Cost per Product Section It contains in above selected product list,
-                                                                    otherwise it may be not apply proper shipping charges. For more detail please view
-                                                                    our documentation at <a href="%s" target="_blank">Click Here</a>.
-                                                                    </p>', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-															'a' => array( 'href' => array(), 'target' => array() ),
-														) )
-													, esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
-											} elseif ( 'variableproduct' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_varible_product_list( $i, $condtion_value, 'edit' );
-												$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
-                                                                    Advanced Pricing > Cost per Category Section It contains in above selected category list,
-                                                                    otherwise it may be not apply proper shipping charges. For more detail please view
-                                                                    our documentation at <a href="%s" target="_blank">Click Here</a>.
-                                                                    </p>', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-															'a' => array( 'href' => array(), 'target' => array() ),
-														) )
-													, esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
-											} elseif ( 'product_qty' === $fees_conditions ) {
-												$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
-												$html .= wp_kses_post( sprintf( '<p><b style="color: red;">%s</b>%s<a href="%s" target="_blank">%s</a>.
-															</p>',
-													esc_html__( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ),
-													esc_html__( 'This rule will only work if you have selected any one Product Specific option. ', 'woocommerce-conditional-product-fees-for-checkout' ),
-													esc_url( 'https://docs.thedotstore.com/article/391-how-to-add-product-specific-quantity-range-based-fee' ),
-													esc_html__( 'Click Here', 'woocommerce-conditional-product-fees-for-checkout' )
-												) );
-											} elseif ( 'category' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_category_list( $i, $condtion_value );
-											} elseif ( 'tag' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_tag_list( $i, $condtion_value );
-											} elseif ( 'user' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_user_list( $i, $condtion_value );
-											} elseif ( 'user_role' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_user_role_list__premium_only( $i, $condtion_value );
-											} elseif ( 'cart_total' === $fees_conditions ) {
-												$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values price-class" value = "' . $condtion_value . '">';
-											} elseif ( 'cart_totalafter' === $fees_conditions ) {
-												$html .= '<input type="text" name="fees[product_fees_conditions_values][value_' . $i . ']" id="product_fees_conditions_values" class="product_fees_conditions_values price-class" value="' . $condtion_value . '">';
-												$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>This rule will apply when you would apply coupun in front side.
-                                                            <a href="%s" target="_blank">Click Here</a>.</p>', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-															'a' => array( 'href' => array(), 'target' => array() ),
-														) )
-													, esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
-											} elseif ( 'cart_specificproduct' === $fees_conditions ) {
-												$html .= '<input type="text" name="fees[product_fees_conditions_values][value_' . $i . ']" id="product_fees_conditions_values" class="product_fees_conditions_values price-class" value="' . $condtion_value . '">';
-												$html .= wp_kses_post( sprintf( '<p><b style="color: red;">%s</b>%s<a href="%s" target="_blank">%s</a>
-															</p>',
-													esc_html__( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ),
-													esc_html__( 'This rule will apply when you would add cart contain product. ', 'woocommerce-conditional-product-fees-for-checkout' ),
-													esc_url( 'https://docs.thedotstore.com/category/191-premium-plugin-settings' ),
-													esc_html__( 'Click Here', 'woocommerce-conditional-product-fees-for-checkout' )
-												) );
-											} elseif ( 'quantity' === $fees_conditions ) {
-												$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
-											} elseif ( 'weight' === $fees_conditions ) {
-												$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values weight-class" value = "' . $condtion_value . '">';
-												$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
-                                                                    Advanced Pricing > Cost per weight Section It contains in above entered weight,
-                                                                    otherwise it may be not apply proper shipping charges. For more detail please view
-                                                                    our documentation at <a href="%s" target="_blank">Click Here</a>.
-                                                                    </p>', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-															'a' => array( 'href' => array(), 'target' => array() ),
-														) )
-													, esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
-											} elseif ( 'coupon' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_coupon_list__premium_only( $i, $condtion_value );
-											} elseif ( 'shipping_class' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_advance_flat_rate_class__premium_only( $i, $condtion_value );
-											} elseif ( 'payment' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_payment_methods__premium_only( $i, $condtion_value );
-											} elseif ( 'shipping_method' === $fees_conditions ) {
-												$html .= $wcpfc_admin_object->wcpfc_pro_get_active_shipping_methods__premium_only( $i, $condtion_value );
-											}
-										}
-									} else {
-										if ( 'country' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_country_list( $i, $condtion_value );
-										} elseif ( 'city' === $fees_conditions ) {
-											$html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
-											$html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b> Make sure enter each city name in one line.', 'woocommerce-conditional-product-fees-for-checkout' )
-														, array(
-															'p' => array(),
-															'b' => array( 'style' => array() ),
-														) ) );
-										} elseif ( 'product' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_product_list( $i, $condtion_value, 'edit' );
-										} elseif ( 'variableproduct' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_varible_product_list( $i, $condtion_value, 'edit' );
-										} elseif ( 'category' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_category_list( $i, $condtion_value );
-										} elseif ( 'tag' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_tag_list( $i, $condtion_value );
-										} elseif ( 'product_qty' === $fees_conditions ) {
-											$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
-										} elseif ( 'user' === $fees_conditions ) {
-											$html .= $wcpfc_admin_object->wcpfc_pro_get_user_list( $i, $condtion_value );
-										} elseif ( 'cart_total' === $fees_conditions ) {
-											$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values price-class" value = "' . $condtion_value . '">';
-										} elseif ( 'quantity' === $fees_conditions ) {
-											$html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
-										}
-									}
-									echo wp_kses( $html, Woocommerce_Conditional_Product_Fees_For_Checkout_Pro::allowed_html_tags() );
-									?>
-									<input type="hidden" name="condition_key[<?php echo 'value_' . esc_attr( $i ); ?>]"
-									       value="">
-								</td>
-								<td><a id="fee-delete-field" rel-id="<?php echo esc_attr( $i ); ?>" class="delete-row"
-								       href="javascript:;" title="Delete"><i class="fa fa-trash"></i></a></td>
-							</tr>
-							<?php
-							$i ++;
-						}
-					} else {
-						$i = 1;
-						?>
-						<tr id="row_1" valign="top">
-							<th class="titledesc th_product_fees_conditions_condition" scope="row">
-								<select rel-id="1" id="product_fees_conditions_condition_1"
-								        name="fees[product_fees_conditions_condition][]"
-								        id="product_fees_conditions_condition"
-								        class="product_fees_conditions_condition">
-									<optgroup
-										label="<?php esc_attr_e( 'Location Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-										<option
-											value="country"><?php esc_html_e( 'Country', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<option
-												value="city"><?php esc_html_e( 'City', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<?php
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												?>
-												<option
-													value="state"><?php esc_html_e( 'State', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<option
-													value="postcode"><?php esc_html_e( 'Postcode', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<option
-													value="zone"><?php esc_html_e( 'Zone', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<?php
-											}
-										}
-										?>
-									</optgroup>
-									<optgroup
-										label="<?php esc_attr_e( 'Product Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-										<option
-											value="product"><?php esc_html_e( 'Cart contains product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<option
-											value="variableproduct"><?php esc_html_e( 'Cart contains variable product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<option
-											value="category"><?php esc_html_e( 'Cart contains category\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<option
-											value="tag"><?php esc_html_e( 'Cart contains tag\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<option
-											value="product_qty"><?php esc_html_e( 'Cart contains product\'s quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-									</optgroup>
-									<optgroup
-										label="<?php esc_attr_e( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-										<option
-											value="user"><?php esc_html_e( 'User', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<?php
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												?>
-												<option
-													value="user_role"><?php esc_html_e( 'User Role', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<?php
-											}
-										}
-										?>
-									</optgroup>
-									<optgroup
-										label="<?php esc_attr_e( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-										<?php
-										$currency_symbol = get_woocommerce_currency_symbol();
-										$currency_symbol = ! empty( $currency_symbol ) ? '(' . $currency_symbol . ')' : '';
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												$weight_unit = get_option( 'woocommerce_weight_unit' );
-												$weight_unit = ! empty( $weight_unit ) ? '(' . $weight_unit . ')' : '';
-											}
-										}
-										?>
-										<option
-											value="cart_total"><?php esc_html_e( 'Cart Subtotal (Before Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-										<?php
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												?>
-												<option
-													value="cart_totalafter"><?php esc_html_e( 'Cart Subtotal (After Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-												<option
-													value="cart_specificproduct"><?php esc_html_e( 'Cart Subtotal (Specific products) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
-												<?php
-											}
-										}
-										?>
-										<option
-											value="quantity"><?php esc_html_e( 'Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-										<?php
-										if ( wcpffc_fs()->is__premium_only() ) {
-											if ( wcpffc_fs()->can_use_premium_code() ) {
-												?>
-												<option
-													value="weight"><?php esc_html_e( 'Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $weight_unit ); ?></option>
-												<option
-													value="coupon"><?php esc_html_e( 'Coupon', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<option
-													value="shipping_class"><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-												<?php
-											}
-										}
-										?>
-									</optgroup>
-									<?php
-									if ( wcpffc_fs()->is__premium_only() ) {
-										if ( wcpffc_fs()->can_use_premium_code() ) {
-											?>
-											<optgroup
-												label="<?php esc_attr_e( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-												<option
-													value="payment"><?php esc_html_e( 'Payment Gateway', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											</optgroup>
-											<optgroup
-												label="<?php esc_attr_e( 'Shipping Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
-												<option
-													value="shipping_method"><?php esc_html_e( 'Shipping Method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-											</optgroup>
-											<?php
-										}
-									}
-									?>
-								</select>
-							</td>
-							<td class="select_condition_for_in_notin">
-								<select name="fees[product_fees_conditions_is][]"
-								        class="product_fees_conditions_is product_fees_conditions_is_1">
-									<option
-										value="is_equal_to"><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-									<option
-										value="not_in"><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
-								</select>
-							</td>
-							<td id="column_1" class="condition-value">
-								<?php echo wp_kses( $wcpfc_admin_object->wcpfc_pro_get_country_list( 1 ), Woocommerce_Conditional_Product_Fees_For_Checkout_Pro::allowed_html_tags() ); ?>
-								<input type="hidden" name="condition_key[value_1][]" value="">
-							</td>
-						</tr>
-					<?php } ?>
-					</tbody>
-				</table>
-				<input type="hidden" name="total_row" id="total_row" value="<?php echo esc_attr( $i ); ?>">
-			</div>
+            <div class="fees-rules">
+                <div class="sub-title">
+                    <h2 class="ap-title"><?php esc_html_e( 'Conditional Fee Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+                    <div class="tap">
+                        <a id="fee-add-field" class="button button-large" href="javascript:;">
+                            <?php esc_html_e( '+ Add Row', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                        </a>
+                    </div>
+                    <?php
+                    if ( wcpffc_fs()->is__premium_only() ) {
+                        if ( wcpffc_fs()->can_use_premium_code() ) {
+                            ?>
+                            <div class="wocfc_match_type">
+                                <p class="switch_in_pricing_rules_description_left">
+                                    <?php esc_html_e( 'below', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                                </p>
+                                <select name="cost_rule_match[general_rule_match]" id="general_rule_match"
+                                        class="arcmt_select">
+                                    <option
+                                        value="any" <?php selected( $general_rule_match, 'any' ) ?>><?php esc_html_e( 'Any One', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                    <option
+                                        value="all" <?php selected( $general_rule_match, 'all' ) ?>><?php esc_html_e( 'All', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                </select>
+                                <p class="switch_in_pricing_rules_description">
+                                    <?php esc_html_e( 'rule match', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
+                                </p>
+                            </div>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+                <div class="tap">
+                    <table id="tbl-product-fee" class="tbl_product_fee table-outer tap-cas form-table product-fee-table">
+                        <tbody>
+                        <?php
+                        $attribute_taxonomies_name = wc_get_attribute_taxonomy_names();
+                        if ( isset( $productFeesArray ) && ! empty( $productFeesArray ) ) {
+                            $i = 2;
+                            foreach ( $productFeesArray as $key => $productfees ) {
+                                $fees_conditions = isset( $productfees['product_fees_conditions_condition'] ) ? $productfees['product_fees_conditions_condition'] : '';
+                                $condition_is    = isset( $productfees['product_fees_conditions_is'] ) ? $productfees['product_fees_conditions_is'] : '';
+                                $condtion_value  = isset( $productfees['product_fees_conditions_values'] ) ? $productfees['product_fees_conditions_values'] : array();
+                                ?>
+                                <tr id="row_<?php echo esc_attr( $i ); ?>" valign="top">
+                                    <th class="titledesc th_product_fees_conditions_condition" scope="row">
+                                        <select rel-id="<?php echo esc_attr( $i ); ?>"
+                                                id="product_fees_conditions_condition_<?php echo esc_attr( $i ); ?>"
+                                                name="fees[product_fees_conditions_condition][]"
+                                                id="product_fees_conditions_condition"
+                                                class="product_fees_conditions_condition">
+                                            <optgroup
+                                                label="<?php esc_attr_e( 'Location Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                <option
+                                                    value="country" <?php echo ( 'country' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Country', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="city" <?php echo ( 'city' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'City', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <?php
+                                                if ( wcpffc_fs()->is__premium_only() ) {
+                                                    if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                        ?>
+                                                        <option
+                                                            value="state" <?php echo ( 'state' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'State', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <option
+                                                            value="postcode" <?php echo ( 'postcode' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Postcode', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <option
+                                                            value="zone" <?php echo ( 'zone' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Zone', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <?php
+                                                    }
+                                                }
+                                                ?>
+                                            </optgroup>
+                                            <optgroup
+                                                label="<?php esc_attr_e( 'Product Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                <option
+                                                    value="product" <?php echo ( 'product' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="variableproduct" <?php echo ( 'variableproduct' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains variable product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="category" <?php echo ( 'category' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains category\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="tag" <?php echo ( 'tag' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains tag\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="product_qty" <?php echo ( 'product_qty' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart contains product\'s quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            </optgroup>
+                                            <?php if ( wcpffc_fs()->is__premium_only() && wcpffc_fs()->can_use_premium_code() ) { ?>
+                                                <optgroup
+                                                label="<?php esc_attr_e( 'Attribute Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                <?php 
+                                                    $attribute_taxonomies = wc_get_attribute_taxonomies();
+                                                    foreach ( $attribute_taxonomies as $attribute ) {
+                                                        $att_label             = $attribute->attribute_label;
+                                                        $att_name              = wc_attribute_taxonomy_name( $attribute->attribute_name );
+                                                        ?>
+                                                        <option value="<?php echo esc_attr( $att_name ); ?>" <?php echo ( $att_name === $fees_conditions ) ? 'selected' : '' ?>><?php echo esc_html( $att_label ); ?></option>
+                                                        <?php
+                                                    };
+                                                ?>
+                                                </optgroup>
+                                            <?php } ?>
+                                            <optgroup
+                                                label="<?php esc_attr_e( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                <option
+                                                    value="user" <?php echo ( 'user' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'User', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <?php
+                                                if ( wcpffc_fs()->is__premium_only() ) {
+                                                    if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                        ?>
+                                                        <option
+                                                            value="user_role" <?php echo ( 'user_role' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'User Role', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <?php
+                                                    }
+                                                }
+                                                ?>
+                                            </optgroup>
+                                            <optgroup
+                                                label="<?php esc_attr_e( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                <?php
+                                                $currency_symbol = get_woocommerce_currency_symbol();
+                                                $currency_symbol = ! empty( $currency_symbol ) ? '(' . $currency_symbol . ')' : '';
+                                                if ( wcpffc_fs()->is__premium_only() ) {
+                                                    if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                        $weight_unit = get_option( 'woocommerce_weight_unit' );
+                                                        $weight_unit = ! empty( $weight_unit ) ? '(' . $weight_unit . ')' : '';
+                                                    }
+                                                }
+                                                ?>
+                                                <option
+                                                    value="cart_total" <?php echo ( 'cart_total' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (Before Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                                <?php
+                                                if ( wcpffc_fs()->is__premium_only() ) {
+                                                    if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                        ?>
+                                                        <option
+                                                            value="cart_totalafter" <?php echo ( 'cart_totalafter' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (After Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                                        <option
+                                                            value="cart_specificproduct" <?php echo ( 'cart_specificproduct' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Cart Subtotal (Specific products) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                                        <?php
+                                                    }
+                                                }
+                                                ?>
+                                                <option
+                                                    value="quantity" <?php echo ( 'quantity' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <?php
+                                                if ( wcpffc_fs()->is__premium_only() ) {
+                                                    if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                        ?>
+                                                        <option
+                                                            value="weight" <?php echo ( 'weight' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $weight_unit ); ?></option>
+                                                        <option
+                                                            value="coupon" <?php echo ( 'coupon' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Coupon', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <option
+                                                            value="shipping_class" <?php echo ( 'shipping_class' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                        <?php
+                                                    }
+                                                }
+                                                ?>
+                                            </optgroup>
+                                            <?php
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    ?>
+                                                    <optgroup
+                                                        label="<?php esc_attr_e( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                        <option
+                                                            value="payment" <?php echo ( 'payment' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Payment Gateway', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    </optgroup>
+                                                    <optgroup
+                                                        label="<?php esc_attr_e( 'Shipping Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                        <option
+                                                            value="shipping_method" <?php echo ( 'shipping_method' === $fees_conditions ) ? 'selected' : '' ?>><?php esc_html_e( 'Shipping Method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    </optgroup>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                    </th>
+                                    <td class="select_condition_for_in_notin">
+                                        <?php if ( 'cart_total' === $fees_conditions || 'cart_totalafter' === $fees_conditions || 'cart_specificproduct' === $fees_conditions || 'quantity' === $fees_conditions || 'weight' === $fees_conditions || 'product_qty' === $fees_conditions ) { ?>
+                                            <select name="fees[product_fees_conditions_is][]"
+                                                    class="product_fees_conditions_is_<?php echo esc_attr( $i ); ?>">
+                                                <option
+                                                    value="is_equal_to" <?php echo ( 'is_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="less_equal_to" <?php echo ( 'less_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Less or Equal to ( <= )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="less_then" <?php echo ( 'less_then' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Less than ( < )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="greater_equal_to" <?php echo ( 'greater_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Greater or Equal to ( >= )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="greater_then" <?php echo ( 'greater_then' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Greater than ( > )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="not_in" <?php echo ( 'not_in' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            </select>
+                                        <?php } else { ?>
+                                            <select name="fees[product_fees_conditions_is][]"
+                                                    class="product_fees_conditions_is_<?php echo esc_attr( $i ); ?>">
+                                                <option
+                                                    value="is_equal_to" <?php echo ( 'is_equal_to' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                <option
+                                                    value="not_in" <?php echo ( 'not_in' === $condition_is ) ? 'selected' : '' ?>><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?> </option>
+                                            </select>
+                                        <?php } ?>
+                                    </td>
+                                    <td class="condition-value" id="column_<?php echo esc_attr( $i ); ?>" <?php if( $i <= 2 ) { echo 'colspan="2"'; } ?>>
+                                        <?php
+                                        $html = '';
+                                        if ( wcpffc_fs()->is__premium_only() ) {
+                                            if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                if ( 'country' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_country_list( $i, $condtion_value );
+                                                } elseif ( 'state' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_states_list__premium_only( $i, $condtion_value );
+                                                } elseif ( 'city' === $fees_conditions ) {
+                                                    $html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
+                                                    $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b> Make sure enter each city name in one line.', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                            ) ) );
+                                                } elseif ( 'postcode' === $fees_conditions ) {
+                                                    $html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
+                                                } elseif ( 'zone' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_zones_list__premium_only( $i, $condtion_value );
+                                                } elseif ( 'product' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_product_list( $i, $condtion_value, 'edit' );
+                                                    $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
+                                                                        Advanced Pricing > Cost per Product Section It contains in above selected product list,
+                                                                        otherwise it may be not apply proper shipping charges. For more detail please view
+                                                                        our documentation at <a href="%s" target="_blank">Click Here</a>.
+                                                                        </p>', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                                'a' => array( 'href' => array(), 'target' => array() ),
+                                                            ) )
+                                                        , esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
+                                                } elseif ( 'variableproduct' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_varible_product_list( $i, $condtion_value, 'edit' );
+                                                    $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
+                                                                        Advanced Pricing > Cost per Category Section It contains in above selected category list,
+                                                                        otherwise it may be not apply proper shipping charges. For more detail please view
+                                                                        our documentation at <a href="%s" target="_blank">Click Here</a>.
+                                                                        </p>', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                                'a' => array( 'href' => array(), 'target' => array() ),
+                                                            ) )
+                                                        , esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
+                                                } elseif ( 'product_qty' === $fees_conditions ) {
+                                                    $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
+                                                    $html .= wp_kses_post( sprintf( '<p><b style="color: red;">%s</b>%s<a href="%s" target="_blank">%s</a>.
+                                                                </p>',
+                                                        esc_html__( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ),
+                                                        esc_html__( 'This rule will only work if you have selected any one Product Specific option. ', 'woocommerce-conditional-product-fees-for-checkout' ),
+                                                        esc_url( 'https://docs.thedotstore.com/article/391-how-to-add-product-specific-quantity-range-based-fee' ),
+                                                        esc_html__( 'Click Here', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                    ) );
+                                                } elseif ( 'category' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_category_list( $i, $condtion_value );
+                                                } elseif ( 'tag' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_tag_list( $i, $condtion_value );
+                                                } elseif ( in_array( $fees_conditions, $attribute_taxonomies_name, true ) ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_att_term_list__premium_only( $i, $fees_conditions, $condtion_value );
+                                                } elseif ( 'user' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_user_list( $i, $condtion_value );
+                                                } elseif ( 'user_role' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_user_role_list__premium_only( $i, $condtion_value );
+                                                } elseif ( 'cart_total' === $fees_conditions ) {
+                                                    $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values price-class" value = "' . $condtion_value . '">';
+                                                } elseif ( 'cart_totalafter' === $fees_conditions ) {
+                                                    $html .= '<input type="text" name="fees[product_fees_conditions_values][value_' . $i . ']" id="product_fees_conditions_values" class="product_fees_conditions_values price-class" value="' . $condtion_value . '">';
+                                                    $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>This rule will apply when you would apply coupun in front side.
+                                                                <a href="%s" target="_blank">Click Here</a>.</p>', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                                'a' => array( 'href' => array(), 'target' => array() ),
+                                                            ) )
+                                                        , esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
+                                                } elseif ( 'cart_specificproduct' === $fees_conditions ) {
+                                                    $html .= '<input type="text" name="fees[product_fees_conditions_values][value_' . $i . ']" id="product_fees_conditions_values" class="product_fees_conditions_values price-class" value="' . $condtion_value . '">';
+                                                    $html .= wp_kses_post( sprintf( '<p><b style="color: red;">%s</b>%s<a href="%s" target="_blank">%s</a>
+                                                                </p>',
+                                                        esc_html__( 'Note: ', 'woocommerce-conditional-product-fees-for-checkout' ),
+                                                        esc_html__( 'This rule will apply when you would add cart contain product. ', 'woocommerce-conditional-product-fees-for-checkout' ),
+                                                        esc_url( 'https://docs.thedotstore.com/category/191-premium-plugin-settings' ),
+                                                        esc_html__( 'Click Here', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                    ) );
+                                                } elseif ( 'quantity' === $fees_conditions ) {
+                                                    $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
+                                                } elseif ( 'weight' === $fees_conditions ) {
+                                                    $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values weight-class" value = "' . $condtion_value . '">';
+                                                    $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b>Please make sure that when you add rules in
+                                                                        Advanced Pricing > Cost per weight Section It contains in above entered weight,
+                                                                        otherwise it may be not apply proper shipping charges. For more detail please view
+                                                                        our documentation at <a href="%s" target="_blank">Click Here</a>.
+                                                                        </p>', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                                'a' => array( 'href' => array(), 'target' => array() ),
+                                                            ) )
+                                                        , esc_url( 'https://www.thedotstore.com/docs/plugin/woocommerce-conditional-product-fees-for-checkout' ) );
+                                                } elseif ( 'coupon' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_coupon_list__premium_only( $i, $condtion_value );
+                                                } elseif ( 'shipping_class' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_advance_flat_rate_class__premium_only( $i, $condtion_value );
+                                                } elseif ( 'payment' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_payment_methods__premium_only( $i, $condtion_value );
+                                                } elseif ( 'shipping_method' === $fees_conditions ) {
+                                                    $html .= $wcpfc_admin_object->wcpfc_pro_get_active_shipping_methods__premium_only( $i, $condtion_value );
+                                                }
+                                            }
+                                        } else {
+                                            if ( 'country' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_country_list( $i, $condtion_value );
+                                            } elseif ( 'city' === $fees_conditions ) {
+                                                $html .= '<textarea name = "fees[product_fees_conditions_values][value_' . $i . ']">' . $condtion_value . '</textarea>';
+                                                $html .= sprintf( wp_kses( __( '<p><b style="color: red;">Note: </b> Make sure enter each city name in one line.', 'woocommerce-conditional-product-fees-for-checkout' )
+                                                            , array(
+                                                                'p' => array(),
+                                                                'b' => array( 'style' => array() ),
+                                                            ) ) );
+                                            } elseif ( 'product' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_product_list( $i, $condtion_value, 'edit' );
+                                            } elseif ( 'variableproduct' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_varible_product_list( $i, $condtion_value, 'edit' );
+                                            } elseif ( 'category' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_category_list( $i, $condtion_value );
+                                            } elseif ( 'tag' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_tag_list( $i, $condtion_value );
+                                            } elseif ( 'product_qty' === $fees_conditions ) {
+                                                $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
+                                            } elseif ( 'user' === $fees_conditions ) {
+                                                $html .= $wcpfc_admin_object->wcpfc_pro_get_user_list( $i, $condtion_value );
+                                            } elseif ( 'cart_total' === $fees_conditions ) {
+                                                $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values price-class" value = "' . $condtion_value . '">';
+                                            } elseif ( 'quantity' === $fees_conditions ) {
+                                                $html .= '<input type = "text" name = "fees[product_fees_conditions_values][value_' . $i . ']" id = "product_fees_conditions_values" class = "product_fees_conditions_values qty-class" value = "' . $condtion_value . '">';
+                                            }
+                                        }
+                                        echo wp_kses( $html, Woocommerce_Conditional_Product_Fees_For_Checkout_Pro::allowed_html_tags() );
+                                        ?>
+                                        <input type="hidden" name="condition_key[<?php echo 'value_' . esc_attr( $i ); ?>]" value="">
+                                    </td>
+                                    <?php if( $i > 2 ) { ?>
+                                        <td>
+                                            <a id="fee-delete-field" rel-id="<?php echo esc_attr( $i ); ?>" class="delete-row" href="javascript:;" title="Delete"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                    <?php } ?>
+                                </tr>
+                                <?php
+                                $i ++;
+                            }
+                        } else {
+                            $i = 1;
+                            ?>
+                            <tr id="row_1" valign="top">
+                                <th class="titledesc th_product_fees_conditions_condition" scope="row">
+                                    <select rel-id="1" id="product_fees_conditions_condition_1"
+                                            name="fees[product_fees_conditions_condition][]"
+                                            id="product_fees_conditions_condition"
+                                            class="product_fees_conditions_condition">
+                                        <optgroup
+                                            label="<?php esc_attr_e( 'Location Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                            <option
+                                                value="country"><?php esc_html_e( 'Country', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <option
+                                                    value="city"><?php esc_html_e( 'City', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <?php
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    ?>
+                                                    <option
+                                                        value="state"><?php esc_html_e( 'State', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <option
+                                                        value="postcode"><?php esc_html_e( 'Postcode', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <option
+                                                        value="zone"><?php esc_html_e( 'Zone', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </optgroup>
+                                        <optgroup
+                                            label="<?php esc_attr_e( 'Product Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                            <option
+                                                value="product"><?php esc_html_e( 'Cart contains product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <option
+                                                value="variableproduct"><?php esc_html_e( 'Cart contains variable product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <option
+                                                value="category"><?php esc_html_e( 'Cart contains category\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <option
+                                                value="tag"><?php esc_html_e( 'Cart contains tag\'s product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <option
+                                                value="product_qty"><?php esc_html_e( 'Cart contains product\'s quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                        </optgroup>
+                                        <?php if ( wcpffc_fs()->is__premium_only() && wcpffc_fs()->can_use_premium_code() ) { ?>
+                                            <optgroup
+                                            label="<?php esc_attr_e( 'Attribute Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                            <?php 
+                                                $attribute_taxonomies = wc_get_attribute_taxonomies();
+                                                foreach ( $attribute_taxonomies as $attribute ) {
+                                                    $att_label             = $attribute->attribute_label;
+                                                    $att_name              = wc_attribute_taxonomy_name( $attribute->attribute_name );
+                                                    ?>
+                                                    <option value="<?php echo esc_attr( $att_name ); ?>"><?php echo esc_html( $att_label ); ?></option>
+                                                    <?php
+                                                };
+                                            ?>
+                                            </optgroup>
+                                        <?php } ?>
+                                        <optgroup
+                                            label="<?php esc_attr_e( 'User Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                            <option
+                                                value="user"><?php esc_html_e( 'User', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <?php
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    ?>
+                                                    <option
+                                                        value="user_role"><?php esc_html_e( 'User Role', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </optgroup>
+                                        <optgroup
+                                            label="<?php esc_attr_e( 'Cart Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                            <?php
+                                            $currency_symbol = get_woocommerce_currency_symbol();
+                                            $currency_symbol = ! empty( $currency_symbol ) ? '(' . $currency_symbol . ')' : '';
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    $weight_unit = get_option( 'woocommerce_weight_unit' );
+                                                    $weight_unit = ! empty( $weight_unit ) ? '(' . $weight_unit . ')' : '';
+                                                }
+                                            }
+                                            ?>
+                                            <option
+                                                value="cart_total"><?php esc_html_e( 'Cart Subtotal (Before Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                            <?php
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    ?>
+                                                    <option
+                                                        value="cart_totalafter"><?php esc_html_e( 'Cart Subtotal (After Discount) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                                    <option
+                                                        value="cart_specificproduct"><?php esc_html_e( 'Cart Subtotal (Specific products) ', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $currency_symbol ); ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                            <option
+                                                value="quantity"><?php esc_html_e( 'Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                            <?php
+                                            if ( wcpffc_fs()->is__premium_only() ) {
+                                                if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                    ?>
+                                                    <option
+                                                        value="weight"><?php esc_html_e( 'Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?><?php echo esc_html( $weight_unit ); ?></option>
+                                                    <option
+                                                        value="coupon"><?php esc_html_e( 'Coupon', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <option
+                                                        value="shipping_class"><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </optgroup>
+                                        <?php
+                                        if ( wcpffc_fs()->is__premium_only() ) {
+                                            if ( wcpffc_fs()->can_use_premium_code() ) {
+                                                ?>
+                                                <optgroup
+                                                    label="<?php esc_attr_e( 'Payment Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                    <option
+                                                        value="payment"><?php esc_html_e( 'Payment Gateway', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                </optgroup>
+                                                <optgroup
+                                                    label="<?php esc_attr_e( 'Shipping Specific', 'woocommerce-conditional-product-fees-for-checkout' ); ?>">
+                                                    <option
+                                                        value="shipping_method"><?php esc_html_e( 'Shipping Method', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                                </optgroup>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td class="select_condition_for_in_notin">
+                                    <select name="fees[product_fees_conditions_is][]"
+                                            class="product_fees_conditions_is product_fees_conditions_is_1">
+                                        <option
+                                            value="is_equal_to"><?php esc_html_e( 'Equal to ( = )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                        <option
+                                            value="not_in"><?php esc_html_e( 'Not Equal to ( != )', 'woocommerce-conditional-product-fees-for-checkout' ); ?></option>
+                                    </select>
+                                </td>
+                                <td id="column_1" class="condition-value">
+                                    <?php echo wp_kses( $wcpfc_admin_object->wcpfc_pro_get_country_list( 1 ), Woocommerce_Conditional_Product_Fees_For_Checkout_Pro::allowed_html_tags() ); ?>
+                                    <input type="hidden" name="condition_key[value_1][]" value="">
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="total_row" id="total_row" value="<?php echo esc_attr( $i ); ?>">
+                </div>
+            </div>
 			
 			<?php
 			if ( wcpffc_fs()->is__premium_only() ) {
@@ -1309,7 +1250,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<div id="all_product_list"></div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-product-add-field" class="button button-primary button-large"
 												   href="javascript:;"><?php esc_html_e( '+ Add Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?></a>
@@ -1319,12 +1260,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_product_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( 'You can turn off this button, if you do not need to apply this fee amount.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can turn off this button, if you do not need to apply this fee amount.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -1348,34 +1284,21 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_product_fees_conditions_condition" scope="row">
-													<?php esc_html_e( 'Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Select a product to apply the fee amount to when the min/max quantity match.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+                                                    <label><?php esc_html_e( 'Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Select a product to apply the fee amount to when the min/max quantity match.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 												<th class="titledesc th_product_fees_conditions_condition" scope="row">
-													<?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum product quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+                                                    <label><?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum product quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+                                                </th>
 												<th class="titledesc th_product_fees_conditions_condition" scope="row">
-													<?php esc_html_e( 'Max Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum product quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+                                                    <label><?php esc_html_e( 'Max Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum product quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_product_fees_conditions_condition" scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'A fixed amount (e.g. 5 / -5), percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5), percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -1404,7 +1327,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_product_row_<?php echo esc_attr( $cnt_product ); ?>"
 													    valign="top" class="ap_product_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select rel-id="<?php echo esc_attr( $cnt_product ); ?>"
 															        id="ap_product_fees_conditions_condition_<?php echo esc_attr( $cnt_product ); ?>"
 															        name="fees[ap_product_fees_conditions_condition][<?php echo esc_attr( $cnt_product ); ?>][]"
@@ -1497,7 +1420,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Product Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Product Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-product-subtotal-add-field"
 												   class="button button-primary button-large"
@@ -1509,12 +1432,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_product_subtotal_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -1540,39 +1458,22 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tr class="heading">
 												<th class="titledesc th_product_subtotal_fees_conditions_condition"
 												    scope="row"><?php esc_html_e( 'Product Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Product Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 												</th>
 												<th class="titledesc th_product_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_product_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty then will set with maximum 999999999999999999999999999', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_product_subtotal_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -1603,7 +1504,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_product_subtotal_row_<?php echo esc_attr( $cnt_product_subtotal ); ?>"
 													    valign="top" class="ap_product_subtotal_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select
 																rel-id="<?php echo esc_attr( $cnt_product_subtotal ); ?>"
 																id="ap_product_subtotal_fees_conditions_condition_<?php echo esc_attr( $cnt_product_subtotal ); ?>"
@@ -1690,7 +1591,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<div id="all_product_weight_list"></div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Product Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Product Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-product-weight-add-field"
 												   class="button button-primary button-large"
@@ -1701,12 +1602,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_product_weight_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( 'You can turn off this button, if you do not need to apply this fee amount.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can turn off this button, if you do not need to apply this fee amount.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -1731,40 +1627,24 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tr class="heading">
 												<th class="titledesc th_product_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Select a product to apply the fee amount to when the min/max weight match.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+													<label><?php esc_html_e( 'Product', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Select a product to apply the fee amount to when the min/max weight match.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 												<th class="titledesc th_product_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum product weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum product weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_product_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum product weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum product weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_product_weight_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -1792,7 +1672,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_product_weight_row_<?php echo esc_attr( $cnt_product_weight ); ?>"
 													    valign="top" class="ap_product_weight_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select
 																rel-id="<?php echo esc_attr( $cnt_product_weight ); ?>"
 																id="ap_product_weight_fees_conditions_condition_<?php echo esc_attr( $cnt_product_weight ); ?>"
@@ -1879,7 +1759,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-category-add-field" class="button button-primary button-large"
 												   href="javascript:;"><?php esc_html_e( '+ Add Rule', 'woocommerce-conditional-product-fees-for-checkout' ); ?></a>
@@ -1889,12 +1769,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_category_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( 'You can turn off this button, if you do not need to apply this fee amount.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can turn off this button, if you do not need to apply this fee amount.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -1918,37 +1793,22 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_category_fees_conditions_condition"
-												    scope="row"><?php esc_html_e( 'Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Select a category to apply the fee amount to when the min/max quantity match.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    scope="row">
+                                                    <label><?php esc_html_e( 'Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Select a category to apply the fee amount to when the min/max quantity match.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 												<th class="titledesc th_category_fees_conditions_condition" scope="row">
-													<?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum category quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum category quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_fees_conditions_condition" scope="row">
-													<?php esc_html_e( 'Max Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum category quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum category quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_fees_conditions_condition" scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -1979,7 +1839,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													<tr id="ap_category_row_<?php echo esc_attr( $cnt_category ); ?>"
 													    valign="top"
 													    class="ap_category_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select rel-id="<?php echo esc_attr( $cnt_category ); ?>"
 															        id="ap_category_fees_conditions_condition_<?php echo esc_attr( $cnt_category ); ?>"
 															        name="fees[ap_category_fees_conditions_condition][<?php echo esc_attr( $cnt_category ); ?>][]"
@@ -2067,7 +1927,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Category Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Category Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-category-subtotal-add-field"
 												   class="button button-primary button-large"
@@ -2079,12 +1939,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_category_subtotal_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE,  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -2109,40 +1964,24 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_category_subtotal_fees_conditions_condition"
-												    scope="row"><?php esc_html_e( 'Category Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Category Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    scope="row">
+                                                    <label><?php esc_html_e( 'Category Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 												</th>
 												<th class="titledesc th_category_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty then will set with maximum 999999999999999999999999999', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_subtotal_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -2173,7 +2012,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_category_subtotal_row_<?php echo esc_attr( $cnt_category_subtotal ); ?>"
 													    valign="top" class="ap_category_subtotal_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select
 																rel-id="<?php echo esc_attr( $cnt_category_subtotal ); ?>"
 																id="ap_category_subtotal_fees_conditions_condition_<?php echo esc_attr( $cnt_category_subtotal ); ?>"
@@ -2269,7 +2108,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Category Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Category Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-category-weight-add-field"
 												   class="button button-primary button-large"
@@ -2280,12 +2119,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_category_weight_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE,  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -2310,40 +2144,25 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_category_weight_fees_conditions_condition"
-												    scope="row"><?php esc_html_e( 'Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Select a category to apply the fee amount to when the min/max weight match.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    scope="row">
+                                                    <label><?php esc_html_e( 'Category', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Select a category to apply the fee amount to when the min/max weight match.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 												<th class="titledesc th_category_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum category weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum category weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum category weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum category weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_category_weight_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -2373,7 +2192,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_category_weight_row_<?php echo esc_attr( $cnt_category_weight ); ?>"
 													    valign="top" class="ap_category_weight_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select
 																rel-id="<?php echo esc_attr( $cnt_category_weight ); ?>"
 																id="ap_category_weight_fees_conditions_condition_<?php echo esc_attr( $cnt_category_weight ); ?>"
@@ -2460,7 +2279,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Total Cart Qty', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Total Cart Qty', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-total-cart-qty-add-field"
 												   class="button button-primary button-large"
@@ -2471,12 +2290,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_total_cart_qty_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( 'You can turn off this button, if you do not need to apply this fee amount.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can turn off this button, if you do not need to apply this fee amount.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -2501,39 +2315,22 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tr class="heading">
 												<th class="titledesc th_total_cart_qty_fees_conditions_condition"
 												    scope="row"><?php esc_html_e( 'Total Cart Qty', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Total Cart Qty', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 												</th>
 												<th class="titledesc th_total_cart_qty_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum total cart quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Quantity ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum total cart quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_total_cart_qty_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum total cart quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Quantity', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum total cart quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_total_cart_qty_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -2563,7 +2360,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_total_cart_qty_row_<?php echo esc_attr( $cnt_total_cart_qty ); ?>"
 													    valign="top" class="ap_total_cart_qty_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<label><?php echo esc_html_e( 'Cart Qty', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 															<input type="hidden"
 															       name="fees[ap_total_cart_qty_fees_conditions_condition][<?php echo esc_attr( $cnt_total_cart_qty ); ?>][]"
@@ -2647,7 +2444,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Total Cart Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Total Cart Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-total-cart-weight-add-field"
 												   class="button button-primary button-large"
@@ -2658,12 +2455,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_total_cart_weight_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE,  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -2689,39 +2481,22 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tr class="heading">
 												<th class="titledesc th_total_cart_weight_fees_conditions_condition"
 												    scope="row"><?php esc_html_e( 'Total Cart Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Total Cart Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
 												</th>
 												<th class="titledesc th_total_cart_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum total cart weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a minimum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Weight ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum total cart weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+										        </th>
 												<th class="titledesc th_total_cart_weight_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum total cart weight per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty to not set a maximum.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<lanel><?php esc_html_e( 'Max Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum total cart weight per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_total_cart_weight_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -2751,7 +2526,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_total_cart_weight_row_<?php echo esc_attr( $cnt_total_cart_weight ); ?>"
 													    valign="top" class="ap_total_cart_weight_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<label><?php echo esc_html_e( 'Cart Weight', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 															<input type="hidden"
 															       name="fees[ap_total_cart_weight_fees_conditions_condition][<?php echo esc_attr( $cnt_total_cart_weight ); ?>][]"
@@ -2831,7 +2606,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Total Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Total Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-total-cart-subtotal-add-field"
 												   class="button button-primary button-large"
@@ -2843,12 +2618,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_total_cart_subtotal_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE,  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -2873,40 +2643,24 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_total_cart_subtotal_fees_conditions_condition"
-												    scope="row"><?php esc_html_e( 'Total Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Total Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    scope="row">
+                                                    <label><?php esc_html_e( 'Total Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 												</th>
 												<th class="titledesc th_total_cart_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_total_cart_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum total cart subtotal per row before the fee amount is
-                                                        applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty then will set with maximum 999999999999999999999999999', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum total cart subtotal per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_total_cart_subtotal_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee Amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -2937,7 +2691,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													?>
 													<tr id="ap_total_cart_subtotal_row_<?php echo esc_attr( $cnt_total_cart_subtotal ); ?>"
 													    valign="top" class="ap_total_cart_subtotal_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<label><?php echo esc_html_e( 'Cart Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
 															<input type="hidden"
 															       name="fees[ap_total_cart_subtotal_fees_conditions_condition][<?php echo esc_attr( $cnt_total_cart_subtotal ); ?>][]"
@@ -3023,7 +2777,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											</div>
 										</div>
 										<div class="sub-title">
-											<h2><?php esc_html_e( 'Cost on Shipping Class Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
+											<h2 class="ap-title"><?php esc_html_e( 'Cost on Shipping Class Subtotal', 'woocommerce-conditional-product-fees-for-checkout' ); ?></h2>
 											<div class="tap">
 												<a id="ap-shipping-class-subtotal-add-field"
 												   class="button button-primary button-large"
@@ -3035,12 +2789,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 														       value="on" <?php echo esc_attr( $cost_on_shipping_class_subtotal_status ); ?>>
 														<div class="slider round"></div>
 													</label>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description switch_in_pricing_rules_description"
-													   style="display:none;">
-														<?php esc_html_e( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE, 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( WCPFC_PRO_PERTICULAR_FEE_AMOUNT_NOTICE,  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</div>
 											</div>
 											<div class="wocfc_match_type">
@@ -3066,39 +2815,25 @@ if ( wcpffc_fs()->is__premium_only() ) {
 											<tbody>
 											<tr class="heading">
 												<th class="titledesc th_shipping_class_subtotal_fees_conditions_condition"
-												    scope="row"><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'Select a category to apply the fee amount to when the min/max quantity match.', 'woocommerce-conditional-product-fees-for-checkout' ); ?></p>
+												    scope="row">
+                                                    <label><?php esc_html_e( 'Shipping Class', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'Select a category to apply the fee amount to when the min/max quantity match.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 												<th class="titledesc th_shipping_class_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a minimum category quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Min Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a minimum category quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_shipping_class_subtotal_fees_conditions_condition"
 												    scope="row">
-													<?php esc_html_e( 'Max Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php esc_html_e( 'You can set a maximum category quantity per row before the fee amount is applied.', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-														<br/><?php esc_html_e( 'Leave empty then will set with maximum 999999999999999999999999999', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													</p></th>
+													<label><?php esc_html_e( 'Max Subtotal ', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'You can set a maximum category quantity per row before the fee amount is applied.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
+												</th>
 												<th class="titledesc th_shipping_class_subtotal_fees_conditions_condition"
 												    scope="row"
-												    colspan="2"><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?>
-													<span
-														class="woocommerce_conditional_product_fees_checkout_tab_description"></span>
-													<p class="description" style="display:none;">
-														<?php
-														esc_html_e( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.', 'woocommerce-conditional-product-fees-for-checkout' );
-														?>
-													</p>
+												    colspan="2">
+                                                    <label><?php esc_html_e( 'Fee amount', 'woocommerce-conditional-product-fees-for-checkout' ); ?></label>
+                                                    <?php echo wp_kses( wc_help_tip( esc_html__( 'A fixed amount (e.g. 5 / -5) percentage (e.g. 5% / -5%) to add as a fee. Percentage and minus amount will apply based on cart subtotal.',  'woocommerce-conditional-product-fees-for-checkout' ) ), array( 'span' => $allowed_tooltip_html ) ); ?>
 												</th>
 											</tr>
 											<?php
@@ -3129,7 +2864,7 @@ if ( wcpffc_fs()->is__premium_only() ) {
 													<tr id="ap_shipping_class_subtotal_row_<?php echo esc_attr( $cnt_shipping_class_subtotal ); ?>"
 													    valign="top"
 													    class="ap_shipping_class_subtotal_row_tr">
-														<td class="titledesc" scope="row">
+														<td scope="row">
 															<select
 																rel-id="<?php echo esc_attr( $cnt_shipping_class_subtotal ); ?>"
 																id="ap_shipping_class_subtotal_fees_conditions_condition_<?php echo esc_attr( $cnt_shipping_class_subtotal ); ?>"

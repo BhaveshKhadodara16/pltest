@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:ignore
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -504,6 +504,8 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 								$shipping_class_array  		= array();
 								$payment_gateway       		= array();
 								$shipping_methods      		= array();
+                                $attribute_taxonomies  		= wc_get_attribute_taxonomies();
+                                $atta_name                  = array();
 							}
 						}
 						foreach ( $get_condition_array as $key => $value ) {
@@ -572,6 +574,14 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 									if ( array_search( 'shipping_method', $value, true ) ) {
 										$shipping_methods[ $key ] = $value;
 									}
+                                    if ( $attribute_taxonomies ) {
+                                        foreach ( $attribute_taxonomies as $attribute ) {
+                                            $att_name = wc_attribute_taxonomy_name( $attribute->attribute_name );
+                                            if ( array_search( $att_name, $value, true ) ) {
+                                                $atta_name[ 'att_' . $att_name ] = $value;
+                                            }
+                                        }
+                                    }
 								}
 							}
 							//Check if is country exist
@@ -667,6 +677,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 							}
 							if ( wcpffc_fs()->is__premium_only() ) {
 								if ( wcpffc_fs()->can_use_premium_code() ) {
+                                    $variation_cart_products_array = $this->wcpfc_pro_get_var_name__premium_only( $sitepress, $default_lang );
 									//Check if is state exist
 									if ( is_array( $state_array ) && isset( $state_array ) && ! empty( $state_array ) && ! empty( $cart_array ) ) {
 										$state_passed = $this->wcpfc_pro_match_state_rules__premium_only( $state_array, $general_rule_match );
@@ -766,6 +777,17 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 											$is_passed['has_fee_based_on_shipping_method'] = 'no';
 										}
 									}
+                                    //Check if is attribute exist
+                                    if ( ! empty( $attribute_taxonomies ) ) {
+                                        if ( is_array( $atta_name ) && isset( $atta_name ) && ! empty( $atta_name ) && ! empty( $cart_product_ids_array ) ) {
+                                            $attribute_passed = $this->wcpfc_pro_match_attribute_rule__premium_only( $variation_cart_products_array, $atta_name, $general_rule_match );
+                                            if ( 'yes' === $attribute_passed ) {
+                                                $is_passed['has_fee_based_on_product_att'] = 'yes';
+                                            } else {
+                                                $is_passed['has_fee_based_on_product_att'] = 'no';
+                                            }
+                                        }
+                                    }
 									
 									/**** UPS plugin compatibility code start */
 									$ups_specific_fee_filter = apply_filters('ups_specific_fee_filter', $args = array('flag'=> 0, 'fee_list' => array(), 'allowed_shipping_ids' => array()));
@@ -948,8 +970,9 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 
 							$today =  strtolower( gmdate( "D" ) );
 							$ds_select_day_of_week  	= get_post_meta( $fees_id, 'ds_select_day_of_week', true ) ? get_post_meta( $fees_id, 'ds_select_day_of_week', true ) : array();
-
+                            
 							if ( ( $currentDate >= $feeStartDate || '' === $feeStartDate ) && ( $currentDate <= $feeEndDate || '' === $feeEndDate ) && ( $local_nowtimestamp >= $feeStartTime || '' === $feeStartTime ) && ( $local_nowtimestamp <= $feeEndTime || '' === $feeEndTime ) && ( in_array($today, $ds_select_day_of_week, true) || empty($ds_select_day_of_week) ) ) {
+                                
 								if ( '' !== $fees_cost ) {
 									$chk_enable_coupon_fee = get_option( 'chk_enable_coupon_fee' );
 									$insert_fee_flat = 1;
@@ -971,31 +994,32 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 															$getFeesOptional = apply_filters('is_fee_optional_default', $getFeesOptional);
 														}
 													}
-													$merge_fee_flag = apply_filters('merge_fee_flag',true, $fees_id);
-    												if ( ( ! empty( $chk_enable_custom_fun ) && 'on' === $chk_enable_custom_fun ) && true == $merge_fee_flag ) {
+                                                    $merge_fee_flag = apply_filters('merge_fee_flag',true, $fees_id);
+													if ( ( ! empty( $chk_enable_custom_fun ) && 'on' === $chk_enable_custom_fun ) && true == $merge_fee_flag ) {
 														if( 'yes' !== $getFeesOptional || $apply_rule_for_optional ){
 															$total_fee = $total_fee + $fees_cost;
 														}
 													} else {
 
-														$apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
+														// $apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
 
-														$apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
-
-														if ( $apply_on_only_recurring ) {
+														// $apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
+                                                        
+														// if ( $apply_on_only_recurring ) {
 															
 															if( 'yes' !== $getFeesOptional || $apply_rule_for_optional ) {
 																if( is_checkout() || empty($fee_show_on_checkout_only) ){
 																	$woocommerce->cart->add_fee( $title, $fees_cost, $texable, apply_filters('wcpfc_tax_class','', $fees));
 																}
 															}
-														}
+														// }
 													}
 												}
 											}
 										} else {
 											/** @var add the total fee value $total_fee */
 											if ( ( ! empty( $chk_enable_custom_fun ) && 'on' === $chk_enable_custom_fun ) ) {
+												
 												if ( wcpffc_fs()->is__premium_only() ) {
 													if ( wcpffc_fs()->can_use_premium_code() ) {
 														$getFeesOptional = get_post_meta( $fees_id, 'fee_settings_select_optional', true );
@@ -1008,7 +1032,6 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 														$total_fee = $total_fee + $fees_cost;
 													}
     											} else {
-    												
 													if( 'yes' !== $getFeesOptional || $apply_rule_for_optional ){
 														if( is_checkout() || empty($fee_show_on_checkout_only) ){
 															$woocommerce->cart->add_fee( $title, $fees_cost, $texable, apply_filters('wcpfc_tax_class','', $fees));
@@ -1017,11 +1040,11 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
     											}
     											
     										} else {
-												$apply_on_only_recurring = empty( $package->recurring_cart_key ) || (!empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
+												// $apply_on_only_recurring = empty( $package->recurring_cart_key ) || (!empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
 
-												$apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
+												// $apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
 
-												if ( $apply_on_only_recurring ) {
+												// if ( $apply_on_only_recurring ) {
 													if ( wcpffc_fs()->is__premium_only() ) {
 														if ( wcpffc_fs()->can_use_premium_code() ) {
 															$getFeesOptional = get_post_meta( $fees_id, 'fee_settings_select_optional', true );
@@ -1030,10 +1053,11 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 													}
 													if( 'yes' !== $getFeesOptional || $apply_rule_for_optional ){
 														if( is_checkout() || empty($fee_show_on_checkout_only) ){
+                                                            
 															$woocommerce->cart->add_fee( $title, $fees_cost, $texable, apply_filters('wcpfc_tax_class','', $fees));
 														}
 													}
-												}
+												// }
 											}
 										}
 									} else {
@@ -1062,12 +1086,12 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 											}
 											
 										} else {
-                                            
-											$apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
 
-											$apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
-											
-											if ( $apply_on_only_recurring ) {
+											// $apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
+
+											// $apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
+											// if ( $apply_on_only_recurring ) {
+                                                
 												if ( wcpffc_fs()->is__premium_only() ) {
 													if ( wcpffc_fs()->can_use_premium_code() ) {
 														$getFeesOptional = get_post_meta( $fees_id, 'fee_settings_select_optional', true );
@@ -1079,7 +1103,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 														$woocommerce->cart->add_fee( $title, $fees_cost, $texable, apply_filters('wcpfc_tax_class','', $fees));
 													}
 												}
-											}
+											// }
 										}
 									}
 								}
@@ -1100,13 +1124,13 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 					$chk_enable_all_fee_tax     = ( 'on' === get_option( 'chk_enable_all_fee_tax' ) && !empty( get_option( 'chk_enable_all_fee_tax' ) ) ) ? true : false;
 					$fee_title 					= apply_filters('wcpfc_all_fee_title','Fees');
 
-					$apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
+					// $apply_on_only_recurring = empty( $package->recurring_cart_key ) || ( !empty( $fee_is_recurring ) && 'on' === $fee_is_recurring );
 
-					$apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
+					// $apply_on_only_recurring = apply_filters('wcpfc_apply_on_recurring', $apply_on_only_recurring, $package->recurring_cart_key, $fee_is_recurring, $fees);
 
-					if ( $apply_on_only_recurring ) {
+					// if ( $apply_on_only_recurring ) {
                         $woocommerce->cart->add_fee( wp_kses_post( $fee_title, 'woocommerce-conditional-product-fees-for-checkout' ), $total_fee, $chk_enable_all_fee_tax, apply_filters('wcpfc_tax_class','', -1)); //-1 for combined fees id
-					}
+					// }
 				}
 			}
 		}
@@ -1199,23 +1223,23 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 	 * Optional fee callback function
 	 */
 	public function add_option_to_checkout__premium_only( $payment_fragments ){
-		
+
 		global $woocommerce_wpml, $sitepress, $woocommerce;
 		$default_lang = self::$admin_object->wcpfc_pro_get_default_langugae_with_sitpress();
 		$final_output = '';
 		ob_start();
 		$get_all_fees = get_transient( 'get_all_fees' );
 		if ( false === $get_all_fees ) {
-			// $fees_args    = array(
-			// 	'post_type'        	=> 'wc_conditional_fee',
-			// 	'post_status'      	=> 'publish',
-			// 	'posts_per_page'   	=> - 1,
-			// 	'suppress_filters' 	=> false,
-			// 	'fields'        	=> 'ids',
-			// );
-			// $get_all_fees_query = new WP_Query( $fees_args );
-			// $get_all_fees       = $get_all_fees_query->get_posts();
-			$get_all_fees = get_option( 'sm_sortable_order' );
+			$fees_args    = array(
+				'post_type'        	=> 'wc_conditional_fee',
+				'post_status'      	=> 'publish',
+				'posts_per_page'   	=> - 1,
+				'suppress_filters' 	=> false,
+				'fields'        	=> 'ids',
+			);
+			$get_all_fees_query = new WP_Query( $fees_args );
+			$get_all_fees       = $get_all_fees_query->get_posts();
+			// $get_all_fees = get_option( 'sm_sortable_order' );
 			set_transient( 'get_all_fees', $get_all_fees );
 		}
 		$cart_sub_total = WC()->cart->subtotal;
@@ -1225,6 +1249,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 
 			echo '<div class="optional_fee_container">';
 				$fees_count = 0;
+
 				foreach ( $get_all_fees as $fees ) {
 					if ( ! empty( $sitepress ) ) {
 						$fees_id = apply_filters( 'wpml_object_id', $fees, 'wc_conditional_fee', true, $default_lang );
@@ -1259,12 +1284,15 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 						}
 						//First order for user End
 
+                        //Get optional fee configuration
 						$getFeeoptional   					= get_post_meta( $fees_id, 'fee_settings_select_optional', true );
+
+                        //Get conditional rule flag
 						$display_optional_fee_on_checkout   = get_post_meta( $fees_id, '_wcpfc_display_optional_fee_on_checkout', true );
-						
+                        
 						/** Check if the fee is optional or not */
 						if( 'yes' === $getFeeoptional && 'on' === $display_optional_fee_on_checkout) {
-
+                            
 							//Check other conditions here
 							$is_passed                    = array();
 							$fee_title           = get_the_title( $fees_id );
@@ -1319,7 +1347,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 
 							$today =  strtolower( gmdate( "D" ) );
 							$ds_select_day_of_week  	= get_post_meta( $fees_id, 'ds_select_day_of_week', true ) ? get_post_meta( $fees_id, 'ds_select_day_of_week', true ) : array();
-							
+
 							if ( ( $currentDate >= $feeStartDate || '' === $feeStartDate ) && ( $currentDate <= $feeEndDate || '' === $feeEndDate ) && ( $local_nowtimestamp >= $feeStartTime || '' === $feeStartTime ) && ( $local_nowtimestamp <= $feeEndTime || '' === $feeEndTime ) && ( in_array($today, $ds_select_day_of_week, true) || empty($ds_select_day_of_week) ) ) {
 								if ( '' !== $fees_cost ) {
 									if( 0 === $fees_count){
@@ -1330,7 +1358,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 									echo '<label class="checkbox"><span class="tile_fee">'.esc_html($title) .'</span></label></div>';
 									$fees_count++;
 								}
-							}
+							}	
 						}
 					}
 				}
@@ -1565,6 +1593,7 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 									} else {
 										$site_product_id = $product_id_lan;
 									}
+									// if ( ! ( $_product->is_virtual( 'yes' ) ) && false === strpos( $_product->get_type(), 'bundle' ) ) {
 									if ( false === strpos( $_product->get_type(), 'bundle' ) ) {
 										if ( in_array( $site_product_id, $condition['product_fees_conditions_values'] ) ) {
 											$prod_qty = $value['quantity'] ? $value['quantity'] : 0;
@@ -1664,16 +1693,14 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 								$prod_qty = 0;
 							}
 							$product_id                       = ( $value['variation_id'] ) ? $value['variation_id'] : $product_id;
-                            if ( 'is_equal_to' === $condition['product_fees_conditions_is'] ) {
-                            	if ( in_array( $term_id, $final_cart_products_cats_ids, true ) ) {
-                                    if( array_key_exists($product_id,$terms) && array_key_exists($term_id,$terms[$product_id]) ){
-                                        $term_data_explode  = explode( "||", $terms[ $product_id ][ $term_id ] );
-                                        $cart_term_qty      = json_decode( $term_data_explode[0] );
-                                        $prod_qty += $cart_term_qty;
-                                    }
-                                    $terms[ $product_id ][ $term_id ] = $prod_qty . "||" . $line_item_subtotal;
-                                }
-                            }
+							if ( in_array( $term_id, $final_cart_products_cats_ids, true ) ) {
+								if( array_key_exists($product_id,$terms) && array_key_exists($term_id,$terms[$product_id]) ){
+									$term_data_explode  = explode( "||", $terms[ $product_id ][ $term_id ] );
+									$cart_term_qty      = json_decode( $term_data_explode[0] );
+									$prod_qty += $cart_term_qty;
+								}
+								$terms[ $product_id ][ $term_id ] = $prod_qty . "||" . $line_item_subtotal;
+							}
 						}
 					}
 					foreach ( $terms as $cart_product_key => $main_term_data ) {
@@ -1868,6 +1895,58 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 		}
 		$main_is_passed = $this->wcpfc_pro_check_all_passed_general_rule( $is_passed, 'has_fee_based_on_city', $general_rule_match );
 
+		return $main_is_passed;
+	}
+
+    /**
+	 * Match attribute rules
+	 *
+	 * @param array  $cart_product_ids_array
+	 * @param string $att_name
+	 * @param string $general_rule_match
+	 *
+	 * @return string $main_is_passed
+	 * @since    3.9.0
+	 *
+	 */
+	public function wcpfc_pro_match_attribute_rule__premium_only( $cart_product_ids_array, $att_name, $general_rule_match ) {
+		$is_passed      = array();
+		$passed_product = array();
+		foreach ( $att_name as $key => $product ) {
+			if ( $product['product_fees_conditions_is'] === 'is_equal_to' ) {
+				if ( ! empty( $product['product_fees_conditions_values'] ) ) {
+					foreach ( $product['product_fees_conditions_values'] as $product_id ) {
+						$passed_product[] = $product_id;
+						if ( in_array( $product_id, $cart_product_ids_array, true ) ) {
+							$is_passed[ $key ]['has_fee_based_on_product_att'] = 'yes';
+							break;
+						} else {
+							$is_passed[ $key ]['has_fee_based_on_product_att'] = 'no';
+						}
+					}
+				}
+			}
+			if ( $product['product_fees_conditions_is'] === 'not_in' ) {
+				if ( ! empty( $product['product_fees_conditions_values'] ) ) {
+					foreach ( $product['product_fees_conditions_values'] as $product_id ) {
+						if ( in_array( $product_id, $cart_product_ids_array, true ) ) {
+							$is_passed[ $key ]['has_fee_based_on_product_att'] = 'no';
+							break;
+						} else {
+							$is_passed[ $key ]['has_fee_based_on_product_att'] = 'yes';
+						}
+					}
+				}
+			}
+		}
+		/**
+		 * Filter for matched all passed rules.
+		 *
+		 * @since  3.9.0
+		 *
+		 * @author sj
+		 */
+		$main_is_passed = $this->wcpfc_pro_check_all_passed_general_rule( $is_passed, 'has_fee_based_on_product_att', $general_rule_match );
 		return $main_is_passed;
 	}
 
@@ -3118,10 +3197,20 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 	 *
 	 */
 	public function wcpfc_pro_remove_currency_symbol( $price ) {
-		$wc_currency_symbol = get_woocommerce_currency_symbol();
-		$new_price          = str_replace( $wc_currency_symbol, '', $price );
-		$new_price2         = (double) preg_replace( '/[^.\d]/', '', $new_price );
 
+        $args  = array(
+            'decimal_separator'  => wc_get_price_decimal_separator(),
+            'thousand_separator' => wc_get_price_thousand_separator(),
+        );
+
+        $wc_currency_symbol = get_woocommerce_currency_symbol();
+        $cleanText          = strip_tags($price);
+		$new_price          = str_replace( $wc_currency_symbol, '', $cleanText );
+
+        $tnew_price         = str_replace( $args['thousand_separator'], '', $new_price);
+        $dnew_price         = str_replace( $args['decimal_separator'], '.', $tnew_price);
+        $new_price2         = preg_replace( '/[^.\d]/', '', $dnew_price );
+        
 		return $new_price2;
 	}
 
@@ -4167,13 +4256,13 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 	 *
 	 */
 	public function wcpfc_pro_sorting_fees( $a, $b ) {
-		$order = get_option('sm_sortable_order');
-		$pos_a = array_search($a->id, $order);
-		$pos_b = array_search($b->id, $order);
-		return $pos_a - $pos_b;
-		// if(isset($a->menu_order) && isset($b->menu_order)){
-		// 	return ( $a->menu_order < $b->menu_order ) ? - 1 : 1;
-		// }
+		// $order = get_option('sm_sortable_order');
+		// $pos_a = array_search($a->id, $order);
+		// $pos_b = array_search($b->id, $order);
+		// return $pos_a - $pos_b;
+		if(isset($a->menu_order) && isset($b->menu_order)){
+			return ( $a->menu_order < $b->menu_order ) ? - 1 : 1;
+		}
 	}
 
 	/**
@@ -4192,31 +4281,38 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 		$cart_array             = $this->wcpfc_pro_get_cart();
 		$cart_product_ids_array = array();
 		foreach ( $cart_array as $woo_cart_item ) {
-			$_product = wc_get_product( $woo_cart_item['product_id'] );
-			if ( $_product->is_type( 'variable' ) ) {
-				if ( ! empty( $sitepress ) ) {
-					$cart_product_ids_array[] = apply_filters( 'wpml_object_id', $woo_cart_item['variation_id'], 'product', true, $default_lang );
-				} else {
-					$cart_product_ids_array[] = $woo_cart_item['variation_id'];
-				}
-			}
+            if ( ! empty( $sitepress ) ) {
+                $cart_product_ids_array = apply_filters( 'wpml_object_id', $woo_cart_item['product_id'], 'product', true, $default_lang );
+            } else {
+                $cart_product_ids_array = $woo_cart_item['product_id'];
+            }
+            $_product = wc_get_product( $woo_cart_item['product_id'] );
+            if( $_product instanceof WC_Product ) {
+                if ( ! ( $_product->is_virtual( 'yes' ) ) ) {
+                    if ( $_product->is_type( 'variable' ) ) {
+                        if ( ! empty( $sitepress ) ) {
+                            $cart_variation_id = apply_filters( 'wpml_object_id', $woo_cart_item['variation_id'], 'product', true, $default_lang );
+                        } else {
+                            $cart_variation_id = $woo_cart_item['variation_id'];
+                        }
+                        $variation               = new WC_Product_Variation( $cart_variation_id );
+						$variation_cart_products = $variation->get_variation_attributes();
+						foreach($variation_cart_products as $variation_cart_product) {
+							$variation_cart_products_array[] = $variation_cart_product;
+						}
+                    } else if( $_product->is_type( 'simple' ) ) {
+                        foreach( $_product->get_attributes() as $sa_key => $sa_val ){
+							foreach( $sa_val['options'] as $sa_option ){
+								$sa_data = get_term_by('id', $sa_option, $sa_val['name']);
+								$variation_cart_products_array[] = $sa_data->slug;
+							}
+						}
+                    }
+                }
+            }
 		}
-		$variation_cart_product = array();
-		foreach ( $cart_product_ids_array as $variation_id ) {
-			$variation                = new WC_Product_Variation( $variation_id );
-			$variation_cart_product[] = $variation->get_variation_attributes();
-		}
-		$variation_cart_products_array = array();
-		if ( isset( $variation_cart_product ) && ! empty( $variation_cart_product ) ) {
-			foreach ( $variation_cart_product as $cart_product_id ) {
-				if ( isset( $cart_product_id ) && ! empty( $cart_product_id ) ) {
-					foreach ( $cart_product_id as $v ) {
-						$variation_cart_products_array[] = $v;
-					}
-				}
-			}
-		}
-
+		$variation_cart_products_array = array_unique($variation_cart_products_array);
+       
 		return $variation_cart_products_array;
 	}
 	/**
@@ -4367,6 +4463,29 @@ class Woocommerce_Conditional_Product_Fees_For_Checkout_Pro_Public {
 		$result = preg_replace( "/[^ A-Za-z0-9_=.*()+\-\[\]\/]+/", '', html_entity_decode( $string, ENT_QUOTES ) );
 		return $result;
 	}
+
+    /**
+	 * Check fee has recursive apply on subscription product
+	 *
+	 * @param mixed $string
+	 *
+	 * @return string $result
+	 * @since 3.9.0
+	 *
+	 */
+    public function wcpfc_pro_recurring_fees__premium_only( $return, $fee, $cart ){
+        $post = get_page_by_title($fee->name, OBJECT, 'wc_conditional_fee');
+        $fees_id = !empty($post->ID) ? $post->ID : 0;
+        if( $fees_id > 0 ) {
+            $fee_is_recurring = get_post_meta( $fees_id, 'fee_settings_recurring', true ) ? get_post_meta( $fees_id, 'fee_settings_recurring', true ) : 'off';
+            if( 'on' === $fee_is_recurring ) {
+                $return = true;
+            } else {
+                $return = false;
+            }
+        }
+        return $return;
+    }
 }
 /** Show the fees once trial coupon code apply on subscription product */
 add_filter('wcs_remove_fees_from_initial_cart','wcs_remove_fees_from_initial_cart_custom');

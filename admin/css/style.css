@@ -18,7 +18,7 @@
 }
 #dotsstoremain .all-pad
 {
-    margin: 20px;
+    margin: 20px 20px 0 0px;
 }
 header.dots-header {
     width: 100%;
@@ -57,14 +57,14 @@ header.dots-header {
 .dots-logo-main {
     margin: 20px;
     background-color: #fff;
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    box-shadow: 0 5px 8px rgba(0,0,0,.2);
+    -webkit-box-shadow: 0 8px 30px rgb(0 0 0 / 40%);
+    -moz-box-shadow: 0 8px 30px rgb(0 0 0 / 0.4);
+    box-shadow: 0 8px 30px rgb(0 0 0 / 40%);
+    text-align: center;
 }
 .dots-logo-main .logo-image {
     background: #fff;
-    padding: 20px 10px;
-    text-align: center;
+    padding: 10px;
 }
 .dots-logo-main .plugin-version {
     background: #0073aa;
@@ -78,18 +78,19 @@ header.dots-header {
     margin-top: 20px;
 }
 .dots-plugin-details .dots-header-left .plugin-name .title{
-    line-height: 40px;
+    line-height: 28px;
     font-weight: 500;
-    font-size: 30px;
-    margin-bottom: 15px;
+    font-size: 28px;
+    margin-bottom: 12px;
 }
 .dots-plugin-details .dots-header-left .plugin-name .desc{
     line-height: 28px;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
 }
 .dots-logo-main img {
-    width: 100%;
+    width: 80px;
+    padding: 0 15px;
 }
 .dots-header-right {
     flex-basis: 40%;
@@ -99,7 +100,8 @@ header.dots-header {
     display: -webkit-flex;
     display: flex;
     align-items: center;
-        justify-content: flex-end;
+    justify-content: flex-end;
+    width: 90%;
 }
 .dots-header-right .logo-detail {
     display: inline-block;
@@ -201,10 +203,10 @@ header.dots-header {
 /*sidebar css start*/
 
 .dotstore_plugin_sidebar{
-    box-sizing: border-box;
-    display: inline-block;
-    margin-left: 1%;
-    width: 19%;
+    /* box-sizing: border-box;
+    display: inline-block; */
+    margin-left: 20px;
+    width: 100%;
 }
 .dotstore_plugin_sidebar .right-sec {
     background: #fff;
@@ -348,14 +350,15 @@ img.sidebar_plugin_icone {
 }
 
 /*sidebar css end*/
-.wcpfc-section-left{width: 80%;display: inline-block;box-sizing: border-box;float: left;}
+/* .wcpfc-section-left{width: 80%;display: inline-block;box-sizing: border-box;float: left;} */
 .wcpfc-main-table {width: 100%;display: inline-block;box-sizing: border-box;float: left;}
 .wcpfc-main-table a{
     text-decoration: none;
 }
-a#fee-delete-field {
-    font-size: 25px;
+a#fee-delete-field, .delete-row {
+    font-size: 20px;
     vertical-align: middle;
+    color: #dc2929;
 }
 .wcpfc-main-table h2 {
     font-size: 17px;
@@ -427,6 +430,15 @@ a#fee-delete-field {
     background: #ac2925;
     border: 1px solid #c9302c;
     color: #fff;
+}
+
+.wcpfc-main-table .search-box{
+    margin: 10px 0 16px;
+    position: initial;
+}
+
+.wcpfc-main-table .wp-list-table #title{
+    width: 50%;
 }
 
 .under-table {
@@ -671,9 +683,6 @@ p.block strong {
     font-size: 25px;
 }
 
-.button-dots span.support_dotstore_image:last-child {
-    margin: 0 9px;
-}
 
 .premium_one {
     display: block;
@@ -728,7 +737,7 @@ p.block img {
     width: 100%;
 }
 
-#dotsstoremain th.titledesc {
+#dotsstoremain .titledesc {
     font-size: 13px !important;
     color: #333;
     padding: 20px;
@@ -736,6 +745,7 @@ p.block img {
     line-height: 20px;
     background: #fff;
     position: inherit !important;
+    width: 25%;
 }
 
 dotsnav.nav-tab-wrapper.woo-nav-tab-wrapper {
@@ -819,10 +829,6 @@ tr.Order_amount_highlight td {
 
 div.availability {
     width: 100% !important;
-}
-
-td.select_condition_for_in_notin {
-    width: 13%;
 }
 
 div.tax_status_dotstore {
@@ -1092,12 +1098,11 @@ body.dotstore-plugins_page_wcpfc-list table.table-outer.form-table.conditional-f
 .wcpfc-main-table h2 {
     font-size: 20px;
     text-align: left;
-    font-weight: bold;
-    color: #333;
-    border: 1px solid #ddd;
+    font-weight: normal;
+    color: #fff;
+    border: none;
     padding: 16px;
-    border-bottom: 0;
-    background: #f5f5f5;
+    background: #0073aa;
     margin: 0;
 }
 
@@ -1409,8 +1414,8 @@ body.dotstore-plugins_page_wcpfc-list table.table-outer.form-table.conditional-f
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 30px;
+    width: 40px;
+    height: 20px;
 }
 
 /* Hide default HTML checkbox */
@@ -1433,8 +1438,8 @@ body.dotstore-plugins_page_wcpfc-list table.table-outer.form-table.conditional-f
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 25px;
+    height: 16px;
+    width: 16px;
     left: 2px;
     bottom: 2px;
     background-color: white;
@@ -1443,7 +1448,7 @@ body.dotstore-plugins_page_wcpfc-list table.table-outer.form-table.conditional-f
 }
 
 input:checked + .slider {
-    background-color: #0085ba;
+    background-color: #87c852;
 }
 
 input:focus + .slider {
@@ -1451,9 +1456,9 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(31px);
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
 }
 /* Rounded sliders */
 .slider.round {
@@ -1492,7 +1497,7 @@ body.dotstore-plugins_page_wcpfc-edit-fee table.table-outer.product-fee-table tr
 }
 
 td.select_condition_for_in_notin {
-    width: 13%;
+    width: 20%;
 }
 
 .dotstore-plugins_page_wcpfc-add-new table.tbl_product_fee tr td ul {
@@ -1501,6 +1506,10 @@ td.select_condition_for_in_notin {
 
 .tbl_product_fee tr th.th_product_fees_conditions_condition {
     width: 25%;
+}
+
+#tbl-product-fee tr .condition-value {
+    width: 55%;
 }
 
 table.conditional-fee-listing tr th,
@@ -1558,7 +1567,7 @@ table.form-table.table-outer.product-fee-table tr th span.required-star {
 }
 
 .wcpfc-main-table table.table-outer tr td select {
-    width: 190px;
+    width: 100%;
 }
 
 .wcpfc-main-table table.table-outer tr td select.product_fees_conditions_condition {
@@ -1591,8 +1600,9 @@ table#tbl-product-fee tr td .chosen-container.chosen-container-multi li.search-f
 table#tbl-product-fee tr td .chosen-container.chosen-container-multi ul.chosen-choices {
     padding-top: 0 !important;
 }
-table#tbl-product-fee tr td, table#tbl-product-fee tr th {
-    vertical-align: text-bottom;
+#dotsstoremain table#tbl-product-fee tr td, #dotsstoremain table#tbl-product-fee tr th {
+    vertical-align: middle;
+    padding: 10px 20px;
 }
 /*01-12-2016*/
 .wcpfc-main-table.res-cl form div h2 {
@@ -1603,11 +1613,23 @@ table#tbl-product-fee tr td, table#tbl-product-fee tr th {
 
 .wcpfc-main-table.res-cl form div .tap {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: super;
+    line-height: 30px;
+}
+
+#apm_wrap .wocfc_match_type {
+    display: inline-block;
+    vertical-align: super;
 }
 
 .wcpfc-main-table.res-cl table.form-table.table-outer.product-fee-table {
+    margin-bottom: 50px;
+    border: 1px solid #ddd;
+    display: table;
+    width: 100%;
     margin-top: 0;
+    border-top: 0;
+    background: #fff;
 }
 /* 23-01-2017 */
 #fee_chk_qty_price,
@@ -1641,7 +1663,6 @@ table#tbl-product-fee tr td, table#tbl-product-fee tr th {
 .wcpfc-main-table .product_cost_right_div .applyperqty-boxthree .required-star { color: #f00; }
 .wcpfc-main-table table.table-outer tr th select {width: 100% !important;}
 #apm_wrap table.table-outer tr td select {width: 100% !important;height: 28px;}
-.wcpfc-main-table table.table-outer tr td {padding: 10px !important;}
 
 /*Tab Section*/
 ul.tabs{
@@ -1689,17 +1710,36 @@ ul.tabs li.current{
     margin-top: 22px;
     padding: 5px;
 }
+#apm_wrap .fees_pricing_rules .ap-title {
+    background-color: transparent;
+    color: #333;
+    font-weight: 600;
+}
 
 /*18-4-19*/
 .fees-rules > .sub-title, .fees-pricing-rules > .ap_title {
-    background: #e9e9e9;
-    border: 1px solid #ddd;
-    color: #333;
-    margin: 50px 0 0;
-    padding: 16px;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     align-items: center;
-    flex-wrap: wrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    font-size: 20px;
+    text-align: left;
+    font-weight: 400;
+    color: #fff;
+    /* border: 1px solid #ddd; */
+    border-bottom: 0;
+    background: #0073aa;
+    margin-top: 0px;
+}
+.fees-rules > .sub-title{
+    padding: 10px 0;
+}
+.fees-pricing-rules > .ap_title {
+    padding: 15px 0;
 }
 .fees-rules > .sub-title h2, .fees-pricing-rules > .ap_title h2 {
     padding-top: 0;
@@ -1718,7 +1758,6 @@ ul.tabs li.current{
 }
 .fees-pricing-rules .fees_pricing_rules .tabs .tab-link.current {
     border-top-color: #0085BA;
-    border-bottom: none;
     background: none;
     box-shadow: inset 0 3px 0 #0085BA;
     color: #0085BA;
@@ -1795,13 +1834,13 @@ ul.tabs li.current{
     width: 18px !important;
     height: 18px;;
 }
-.wcpfc-section-left .notice{
-    margin: 2px 0px;
-}
 .wcpfc-new-feture {
     vertical-align: middle;
     color: red;
     font-weight: 700;
+}
+#dotsstoremain .notice, #dotsstoremain #message{
+    margin: 0 0 10px;
 }
 
 /** Cost on per weight CSS end */
@@ -1811,7 +1850,6 @@ ul.tabs li.current{
 /*Button CSS*/
 .button-group {display: inline-block; float: right;}.logo-detail {float: left;}
 .button-dots-left { display: inline-block; float: left; margin-right: 10px;}
-#dotsstoremain .button-dots {display: inline-flex;vertical-align: middle;float: right;}
 .button-group {float: right;}
 .logo-detail {float: left;width: 60%;}
 /* .dots-header-right {width: 85% !important;} */
@@ -1837,9 +1875,12 @@ ul.tabs li.current{
 }
 
 .wcpfc-mastersettings .mastersettings-title h2 {
-    background:#e9e9e9;
-    margin:0;
-    padding:16px;
+    background: #0073aa;
+    margin: 0;
+    color: #fff;
+    padding: 16px;
+    font-weight: normal;
+    font-size: 20px;
 }
 
 .wcpfc-mastersettings .table-mastersettings {
@@ -1866,13 +1907,13 @@ ul.tabs li.current{
     padding: 15px;
 }
 /*css for pagination*/
-.tablenav-pages {display: inline-block; text-align: right; width: 100%;font-size: 15px;color: #0085BA;font-weight: 600; margin-top: 15px;}
-.tablenav-pages a.page-numbers {display: inline-block; width: 18px; text-align: center; text-decoration: none; padding: 5px 5px; margin: 5px 0px; font-size: 14px; height: 15px; color: #000;font-weight: 400;border: 1px solid #DADADA;}
+/* .tablenav-pages {display: inline-block; text-align: right; width: 100%;font-size: 15px;color: #0085BA;font-weight: 600; margin-top: 15px;} */
+/* .tablenav-pages a.page-numbers {display: inline-block; width: 18px; text-align: center; text-decoration: none; padding: 5px 5px; margin: 5px 0px; font-size: 14px; height: 15px; color: #000;font-weight: 400;border: 1px solid #DADADA;} */
 .fees-pricing-rules .fees_pricing_rules .tab-content > .tap {width: 100%; }
 .chosen-container-multi .chosen-choices li.search-field input{width: 150px !important;}
 
-.wocfc_match_type{display: inline-block; padding-left: 15px;vertical-align: middle;}
-.wocfc_match_type .switch_in_pricing_rules_description{margin-top: 0;}
+/* .wocfc_match_type{display: inline-block; padding-left: 15px;vertical-align: middle;} */
+.wocfc_match_type .switch_in_pricing_rules_description{margin-top: 5px;margin-bottom: 0;}
 .switch_in_pricing_rules_description_left {padding-left: 10px;display: inline;padding-right: 5px;margin-top: 0;}
 .main_rule_condition {display: block;text-align: center;margin: 50px 0 0 0;}
 /* Premium Version tab CSS start */
@@ -2085,7 +2126,8 @@ a.dotstore-upgrade:hover{
 }
 
 #dotsstoremain .wcpfc-main-table.res-cl table.product-fee-table .wcpfc_select + span{
-    width: 400px !important;
+    /* width: 400px !important; */
+    width: 100% !important;
 }
 #dotsstoremain .wcpfc-main-table.res-cl table.product-fee-table .wcpfc_select + span .select2-selection--multiple{
     border: solid #ddd 1px;
@@ -2144,6 +2186,29 @@ a.dotstore-upgrade:hover{
 }
 #dotsstoremain .wcpfc-main-table.res-cl .wcpfc_select + span.remove_width {
 	width: 16px!important
+}
+.wcpfc-main-table .sub-section{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    font-size: 20px;
+    text-align: left;
+    font-weight: 400;
+    color: #fff;
+    border: 1px solid #ddd;
+    border-bottom: 0;
+    background: #0073aa;
+    margin-top: 30px;
+    padding: 15px;
+}
+.sub-section h2 {
+    padding: 0;
+    margin-right: 20px;
 }
 .select2-selection__choice { white-space: initial !important;}
 
@@ -2417,6 +2482,102 @@ span.responce_message {
     color: #0073aa;
     background: transparent;
 }
+
+.dots-seperator {border-left: 2px solid #bbb;display: inline-block;margin: 0 0 10px 20px;position: relative;vertical-align: top;}
+.all-pad.hide-sidebar .dots-seperator { margin: 0 0 0 20px;}
+.dots-seperator .toggleSidebar{position: absolute;top: 50px;right: -12px;background: #0073aa;/* width: 20px;height: 20px; */border-radius: 50%;padding: 2px;color: #fff;border: 0;cursor: pointer;}
+#dotsstoremain .all-pad .dots-settings-inner-main {display: -webkit-box;display: -ms-flexbox;display: flex;width: 100%;position: relative;-ms-flex-wrap: nowrap;flex-wrap: nowrap;}
+#dotsstoremain .all-pad .dots-settings-left-side {width: 78%;}
+#dotsstoremain .all-pad .dots-settings-right-side {width: 22%;display: -webkit-box;display: -ms-flexbox;display: flex;-ms-flex-wrap: nowrap;flex-wrap: nowrap;}
+#dotsstoremain .all-pad.hide-sidebar .dots-settings-left-side {width: calc(100% - 22px);}
+#dotsstoremain .all-pad .dots-settings-left-side .wrap{ margin: 0;}
+#dotsstoremain .all-pad.hide-sidebar .dots-settings-right-side {width: 0;}
+#dotsstoremain .all-pad.hide-sidebar .dotstore_plugin_sidebar {display: none;}
+
+.wcpfc-section-left .woocommerce-help-tip {
+    color: #8b8b8b;
+    display: inline-block;
+    font-size: 18px;
+    font-style: normal;
+    height: 16px;
+    line-height: 16px;
+    position: relative;
+    vertical-align: middle;
+    width: 16px;
+	margin-left: 10px;
+}
+.wcpfc-section-left .woocommerce-help-tip::after {
+    font-family: Dashicons;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    text-indent: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    content: "\f223";
+    cursor: help;
+}
+.wcpfc-section-left .section-title .woocommerce-help-tip {
+	color: #fff;
+}
+
+/* Start: Tooltip CSS (tiptip JS) */
+#tiptip_holder{display:none;z-index:8675309;position:absolute;top:0;left:0}
+#tiptip_holder.tip_top{padding-bottom:5px}
+#tiptip_holder.tip_top #tiptip_arrow_inner{margin-top:-7px;margin-left:-6px;border-top-color:#333}
+#tiptip_holder.tip_bottom{padding-top:5px}
+#tiptip_holder.tip_bottom #tiptip_arrow_inner{margin-top:-5px;margin-left:-6px;border-bottom-color:#333}
+#tiptip_holder.tip_right{padding-left:5px}
+#tiptip_holder.tip_right #tiptip_arrow_inner{margin-top:-6px;margin-left:-5px;border-right-color:#333}
+#tiptip_holder.tip_left{padding-right:5px}
+#tiptip_holder.tip_left #tiptip_arrow_inner{margin-top:-6px;margin-left:-7px;border-left-color:#333}
+#tiptip_content,.chart-tooltip,.wc_error_tip{color:#fff;font-size:.8em;max-width:150px;background:#333;text-align:center;border-radius:3px;padding:.618em 1em;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+#tiptip_content code,.chart-tooltip code,.wc_error_tip code{padding:1px;background:#888}
+#tiptip_arrow,#tiptip_arrow_inner{position:absolute;border-color:transparent;border-style:solid;border-width:6px;height:0;width:0}
+/* End: Tooltip CSS (tiptip JS) */
+
+/* Woocoomerce spinner custom code start */
+.blockUI.blockOverlay::before {
+    height: 1em;
+    width: 1em;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.5em;
+    margin-top: -0.5em;
+    content: "";
+    -webkit-animation: spin 1s ease-in-out infinite;
+    animation: spin 1s ease-in-out infinite;
+    background: url(../images/icons/loader.svg) center center;
+    background-size: cover;
+    line-height: 1;
+    text-align: center;
+    font-size: 2em;
+    color: rgba(0,0,0,.75);
+}
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg)
+    }
+}
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg)
+    }
+}
+/* Woocoomerce spinner custom code end */
+
+.ds_time_wrap { display: initial; }
 
 @media only screen and (max-width: 992px){
     .wcpfc-grid-layout {

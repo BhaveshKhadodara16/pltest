@@ -16,24 +16,51 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
     	float: none;
     	width: 100%;
 	}
-	.dotstore_plugin_sidebar {
-    	width: 430px;
-    	margin-top: 30px;
-    	max-width: 100%;
-    	margin: 0 auto;
-    	display: table;
-    	text-align: center;
-    	padding-top: 30px;
-	}
 	#dotsstoremain .wcpfc-main-table.res-cl table.product-fee-table .wcpfc_select + span{
 		width: 85% !important;
 	}
+    .dotstore-sidebar-section .dotstore-important-link-heading .heading-text{
+        font-size: 12px;
+        margin-left: 0px;
+    }
+}
+@media screen and (max-width: 1400px){
+    .et-star-rating label {
+        margin: 0 1px;
+        width: 24px;
+        height: 24px;
+    }
 }
 
 @media screen and (max-width:	1200px){
 	#dotsstoremain th.titledesc {font-size: 12px !important; }
 	.wcpfc-main-table table.table-outer tr td {padding: 20px 10px !important; }
 	#dotsstoremain .fees-pricing-rules .fees_pricing_rules table.fees-table .heading th{text-align: center;}
+    #dotsstoremain .titledesc{ width:30%; }
+    .dots-seperator {
+        display: none;
+    }
+    #dotsstoremain .all-pad .dots-settings-left-side, #dotsstoremain .all-pad .dots-settings-right-side {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    #dotsstoremain .all-pad .dots-settings-inner-main {
+        flex-wrap: wrap;
+    }
+    .dotstore_plugin_sidebar {
+        margin-top: 20px;
+        margin-left: 0px;
+    }
+}
+
+@media screen and (max-width:	1100px){
+    #dotsstoremain .titledesc{ width:40%; }
+    .wcpfc-main-table table.table-outer tr td textarea, .wcpfc-main-table .product-fee-table tbody tr td input {width: 100%;}
+    .wcpfc-main-table .product-fee-table tbody tr td input#ds_time_from,
+    .wcpfc-main-table .product-fee-table tbody tr td input#ds_time_to{width: auto;}
+    /* .ds_time_wrap {display: flex;flex-wrap: nowrap;margin-bottom: 10px;}
+    .ds_time_from, .ds_time_to{align-self: center;margin-right: 10px;   } */
+
 }
 
 @media screen and (max-width:	980px){
@@ -43,31 +70,39 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
 	.set h2{margin-top: 0;}
 	.set-right {width: 100%;float: left;text-align: left;margin-top: 20px;}
 	.search {float: none;}
+    .fees-pricing-rules .fees_pricing_rules {
+        display: grid;
+    }
 	.fees-pricing-rules .fees_pricing_rules .tabs {
     	display: none;
 	}
-	.fees-pricing-rules .fees_pricing_rules .tab-content{
+	.fees-pricing-rules .fees_pricing_rules .fees_pricing_rules_tab_content{
 		display: block;
+        width: 100%;
 	}
+    .fees-pricing-rules .fees_pricing_rules .tab-content{
+        display: block;
+    }
 	.fees-pricing-rules .fees_pricing_rules .tab-content:before{
 		background-color: #ccc;
-    color: #fff;
-    border-top: 1px solid rgba(40,44,42,0.1);
-    margin: 0;
-    padding: 10px 20px;
-    display: block;
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    content: attr(data-title);
-    font-weight: 500;
+        color: #fff;
+        border-top: 1px solid rgba(40,44,42,0.1);
+        margin: 0;
+        padding: 10px 20px;
+        display: block;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        content: attr(data-title);
+        font-weight: 500;
 	}
 	.fees-pricing-rules .fees_pricing_rules .tab-content.current:before{
-		color: #0085ba;
+        color: #fff;
+        background-color: #0085ba;
 	}
 	.fees-pricing-rules .fees_pricing_rules .tab-content.current .tap-class{
 		display: block;
@@ -80,7 +115,7 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
 	}
 	#dotsstoremain .wcpfc-main-table.res-cl .advance_pricing_rule_box table td {
     	display: block;
-    	width: 100% !important;
+    	width: auto !important;
     	margin: 0 auto;
     	padding: 6px 0;
     	text-align: center;
@@ -94,6 +129,10 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
     	width: 85%;
     	margin: 0 auto;
 	}
+    #dotsstoremain .wcpfc-main-table.res-cl .advance_pricing_rule_box table td input[type="checkbox"] {
+    	width: 18px;
+    	margin: 0 auto;
+	}
 	#dotsstoremain .wcpfc-main-table.res-cl .advance_pricing_rule_box .wcpfc_select + span {
     	width: 85% !important;
 	}
@@ -103,9 +142,15 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
     	display: inline-block;
     	margin-bottom: 10px;
 	}
-	.fees-pricing-rules .fees_pricing_rules{
-		padding: 0;
-	}
+    .wcpfc-mastersettings{
+        margin-top: 0px;
+    }
+    table#tbl-product-fee tbody tr:nth-child(even), .advance_pricing_rule_box table tbody tr:nth-child(even) {
+        background-color: rgb(224, 224, 224);
+    }
+    table#tbl-product-fee tbody tr:nth-child(odd), .advance_pricing_rule_box table tbody tr:nth-child(odd) {
+        background-color: #fff;
+    }
 }
 @media screen and (max-width:	782px){
 	.wcpfc-main-table .product-fee-table tbody tr td input,.wcpfc-main-table .product-fee-table tbody tr td select {
@@ -125,10 +170,10 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
 	}
 	table#tbl-product-fee tr td select{
 		height: 40px !important;
-		width: 95% !important;
+		width: 100% !important;
 	}
 	#dotsstoremain .wcpfc-main-table.res-cl table.product-fee-table .wcpfc_select + span {
-    	width: 95% !important;
+    	width: 100% !important;
 	}
 	#dotsstoremain .wcpfc-main-table.res-cl table.product-fee-table th{
 		padding: 20px 0px 20px 10px !important;
@@ -136,6 +181,26 @@ table#tbl-product-fee tr td input#product_fees_conditions_values {width: 20em;}
 	.wcpfc-main-table table.table-outer tr th select {
     	width: 95% !important;
 	}
+    #dotsstoremain .titledesc{
+        width: auto;
+    }
+    .wcpfc-section-left .product-fee-table tr td input[type=checkbox] {
+        display: inline-block;
+        margin-top: 10px;
+        vertical-align: bottom;
+    }
+    .wcpfc-section-left .switch input {
+        display: none !important;
+    }
+    .wcpfc-main-table .wp-list-table #title{
+        width: 100%;
+    }
+    #tbl-product-fee tr .condition-value{
+        width: auto;
+    }
+    #dotsstoremain table#tbl-product-fee tr td{
+        text-align: center;
+    }
 }
 
 @media screen and (max-width:	768px){

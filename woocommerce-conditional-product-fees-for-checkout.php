@@ -4,7 +4,7 @@
  * Plugin Name: WooCommerce Extra Fees Plugin (Premium)
  * Plugin URI:          https://www.thedotstore.com/woocommerce-conditional-product-fees-checkout/
  * Description:         With this plugin, you can create and manage complex fee rules in WooCommerce store without the help of a developer.
- * Version:             3.8.4
+ * Version:             3.9.0
  * Update URI: https://api.freemius.com
  * Author:              theDotstore
  * Author URI:          https://www.thedotstore.com/
@@ -14,8 +14,8 @@
  * Domain Path:         /languages
  *
  * WC requires at least: 4.5
- * WP tested up to: 5.9.3
- * WC tested up to: 6.5.1
+ * WP tested up to: 6.0.2
+ * WC tested up to: 6.9.4
  */
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -174,21 +174,39 @@ add_action( 'admin_init', 'wcpfc_pro_deactivate_plugin' );
 if ( !function_exists( 'wcpfc_pro_deactivate_plugin' ) ) {
     function wcpfc_pro_deactivate_plugin()
     {
-        if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-            
-            if ( wcpffc_fs()->is__premium_only() ) {
+        $active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
+        
+        if ( is_multisite() ) {
+            $network_active_plugins = get_site_option( 'active_sitewide_plugins', array() );
+            $active_plugins = array_merge( $active_plugins, array_keys( $network_active_plugins ) );
+            $active_plugins = array_unique( $active_plugins );
+            if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', $active_plugins ), true ) ) {
                 
-                if ( wcpffc_fs()->can_use_premium_code() ) {
+                if ( wcpffc_fs()->is__premium_only() && wcpffc_fs()->can_use_premium_code() ) {
                     deactivate_plugins( '/woocommerce-conditional-product-fees-for-checkout-premium/woocommerce-conditional-product-fees-for-checkout.php', true );
                 } else {
                     deactivate_plugins( '/woo-conditional-product-fees-for-checkout/woocommerce-conditional-product-fees-for-checkout.php', true );
+                    //WordPress ORG name
+                    deactivate_plugins( '/woocommerce-conditional-product-fees-for-checkout-premium/woocommerce-conditional-product-fees-for-checkout.php', true );
+                    //Freemius name
                 }
             
-            } else {
-                deactivate_plugins( '/woo-conditional-product-fees-for-checkout/woocommerce-conditional-product-fees-for-checkout.php', true );
             }
-        
+        } else {
+            if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', $active_plugins ), true ) ) {
+                
+                if ( wcpffc_fs()->is__premium_only() && wcpffc_fs()->can_use_premium_code() ) {
+                    deactivate_plugins( '/woocommerce-conditional-product-fees-for-checkout-premium/woocommerce-conditional-product-fees-for-checkout.php', true );
+                } else {
+                    deactivate_plugins( '/woo-conditional-product-fees-for-checkout/woocommerce-conditional-product-fees-for-checkout.php', true );
+                    //WordPress ORG name
+                    deactivate_plugins( '/woocommerce-conditional-product-fees-for-checkout-premium/woocommerce-conditional-product-fees-for-checkout.php', true );
+                    //Freemius name
+                }
+            
+            }
         }
+    
     }
 
 }

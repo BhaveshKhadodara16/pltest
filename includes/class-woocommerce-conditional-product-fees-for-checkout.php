@@ -150,7 +150,7 @@ if( !class_exists( 'Woocommerce_Conditional_Product_Fees_For_Checkout_Pro' ) ){
 			$this->loader->add_action( 'wp_ajax_nopriv_wcpfc_pro_product_fees_conditions_values_product_ajax', $plugin_admin, 'wcpfc_pro_product_fees_conditions_values_product_ajax' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_wc_multiple_delete_conditional_fee', $plugin_admin, 'wcpfc_pro_wc_multiple_delete_conditional_fee' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_product_fees_conditions_sorting', $plugin_admin, 'wcpfc_pro_conditional_fee_sorting' );
-			$this->loader->add_action( 'wp_ajax_nopriv_pro_product_fees_conditions_sorting', $plugin_admin, 'wcpfc_pro_conditional_fee_sorting' );
+			// $this->loader->add_action( 'wp_ajax_nopriv_pro_product_fees_conditions_sorting', $plugin_admin, 'wcpfc_pro_conditional_fee_sorting' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_wc_disable_conditional_fee', $plugin_admin, 'wcpfc_pro_multiple_disable_conditional_fee' );
 			$this->loader->add_action( 'wp_ajax_nopriv_wcpfc_pro_wc_disable_conditional_fee', $plugin_admin, 'wcpfc_pro_multiple_disable_conditional_fee' );
 			if ( wcpffc_fs()->is__premium_only() ) {
@@ -168,7 +168,6 @@ if( !class_exists( 'Woocommerce_Conditional_Product_Fees_For_Checkout_Pro' ) ){
 				$this->loader->add_filter( 'admin_footer_text', $plugin_admin, 'wcpfc_pro_admin_footer_review' );
 			}
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_save_master_settings', $plugin_admin, 'wcpfc_pro_save_master_settings' );
-			$this->loader->add_action( 'wp_ajax_wcpfc_pro_clone_fees', $plugin_admin, 'wcpfc_pro_clone_fees' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_change_status_from_list_section', $plugin_admin, 'wcpfc_pro_change_status_from_list_section' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_product_fees_conditions_varible_values_product_ajax', $plugin_admin, 'wcpfc_pro_product_fees_conditions_varible_values_product_ajax' );
 			$this->loader->add_action( 'wp_ajax_wcpfc_pro_simple_and_variation_product_list_ajax', $plugin_admin, 'wcpfc_pro_simple_and_variation_product_list_ajax' );
@@ -204,6 +203,7 @@ if( !class_exists( 'Woocommerce_Conditional_Product_Fees_For_Checkout_Pro' ) ){
 					$this->loader->add_action( 'woocommerce_review_order_before_payment', $plugin_public, 'add_option_to_checkout_fragment__premium_only');
 					$this->loader->add_filter( 'woocommerce_update_order_review_fragments', $plugin_public, 'add_option_to_checkout__premium_only', 10, 1 );
 					// $this->loader->add_filter( 'esc_html', $plugin_public, 'wcpfc_show_fee_label_tooltip__premium_only', 10, 2 );
+                    $this->loader->add_filter( 'woocommerce_subscriptions_is_recurring_fee', $plugin_public, 'wcpfc_pro_recurring_fees__premium_only', 10, 3 );
 				}
 			}
 			$this->loader->add_filter( 'woocommerce_locate_template', $plugin_public, 'woocommerce_locate_template_product_fees_conditions', 1, 3 );
